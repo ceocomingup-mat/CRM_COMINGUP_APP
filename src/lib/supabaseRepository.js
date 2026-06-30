@@ -76,7 +76,7 @@ export const TABLES = {
 /*    Zapis odrzuca klucze spoza listy (np. JS-only: areas, homeAddress, s1_*,
  *    meetingDate — przeniesione do checklist jsonb / pominięte w K4.1).        */
 const COLUMNS = {
-  users: ['id','legacy_id','role','first_name','last_name','email','phone','auth_user_id','rank','rank_pct','manager_id','office_id','provinces','avatar','rank_promoted_at','rank_below_since','created_at','updated_at'],
+  users: ['id','legacy_id','role','first_name','last_name','email','phone','auth_user_id','rank','rank_pct','manager_id','office_id','provinces','avatar','home_address','home_lat','home_lng','rank_promoted_at','rank_below_since','created_at','updated_at'],
   leads: ['id','legacy_id','first_name','last_name','phone','email','province','city','address','source','status','advisor_id','created_at','updated_at'],
   clients: ['id','legacy_id','lead_id','advisor_id','first_name','last_name','phone','email','address','city','province','source','current_stage','mm_netto','mm_status','product','contract_date','status','lost_reason','lat','lng','photos','referrals_given','referred_by_client_id','checklist','created_at','updated_at'],
   client_stage_history: ['id','client_id','stage','entered_at','completed_at'],

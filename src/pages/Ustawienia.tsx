@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useProfile } from '../components/Layout'
-import { getUser, changePassword, type UserFull } from '../lib/repo'
+import { getUser, changePassword, geocodeAddress, updateHomeBase, type UserFull } from '../lib/repo'
+
+// PostgREST/Supabase rzuca surowy obiekt {message,...}, nie Error → wyciągnij message.
+function errMsg(e: unknown): string {
+  if (e instanceof Error) return e.message
+  if (e && typeof e === 'object' && 'message' in e) return String((e as { message: unknown }).message)
+  return String(e)
+}
 
 export default function Ustawienia() {
   const profile = useProfile()
@@ -11,7 +18,7 @@ export default function Ustawienia() {
   useEffect(() => {
     getUser(profile.id)
       .then(setUser)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)))
+      .catch((e: unknown) => setError(errMsg(e)))
   }, [profile.id])
 
   return (
@@ -24,6 +31,8 @@ export default function Ustawienia() {
       )}
 
       <Security />
+
+      {user && <HomeBase user={user} onSaved={setUser} />}
 
       {/* Dane kontaktowe — edycja telefonu jest w Profilu */}
       <section className="mt-4 rounded-2xl border border-line bg-card p-5 shadow-sm">
@@ -64,6 +73,81 @@ export default function Ustawienia() {
   )
 }
 
+function HomeBase({ user, onSaved }: { user: UserFull; onSaved: (u: UserFull) => void }) {
+  const [addr, setAddr] = useState(user.homeAddress ?? '')
+  const [saving, setSaving] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+
+  const geocoded = user.homeAddress != null && user.homeLat != null && user.homeLng != null
+
+  async function save() {
+    setSaving(true); setErr(null); setDone(false)
+    try {
+      const trimmed = addr.trim()
+      if (!trimmed) {
+        const u = await updateHomeBase(user.id, { homeAddress: null, homeLat: null, homeLng: null })
+        onSaved(u); setDone(true)
+      } else {
+        const geo = await geocodeAddress(trimmed)
+        if (!geo) {
+          setErr('Nie udało się odnaleźć adresu — sprawdź pisownię (np. „ul. Morska 12, 80-001 Gdańsk").')
+          return
+        }
+        const u = await updateHomeBase(user.id, {
+          homeAddress: geo.placeName,
+          homeLat: geo.lat,
+          homeLng: geo.lng,
+        })
+        onSaved(u); setAddr(geo.placeName); setDone(true)
+      }
+      setTimeout(() => setDone(false), 3000)
+    } catch (e: unknown) {
+      setErr(errMsg(e))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const input =
+    'w-full rounded-lg border border-line2 bg-bg px-3 py-2 text-sm text-cream outline-none focus:border-brass focus:ring-2 focus:ring-brass/30'
+
+  return (
+    <section className="mt-4 rounded-2xl border border-line bg-card p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-semibold text-cream">Adres bazy dojazdu</div>
+        <span className="text-xs text-steel">Zmieniasz samodzielnie</span>
+      </div>
+      <p className="mt-1 text-xs text-steel">
+        Miejsce, z którego wyjeżdżasz do klientów. Po zapisaniu policzę dystans i czas dojazdu do
+        każdego klienta na mapie.
+      </p>
+      <div className="mt-4 max-w-md space-y-2">
+        <input
+          value={addr}
+          onChange={(e) => setAddr(e.target.value)}
+          placeholder="ul. Morska 12, 80-001 Gdańsk"
+          className={input}
+        />
+        {err && <p className="rounded-lg bg-bad/15 px-3 py-2 text-xs text-bad">{err}</p>}
+        <div className="flex items-center gap-3 pt-1">
+          <button
+            onClick={save}
+            disabled={saving}
+            className="rounded-lg bg-brass px-4 py-2 text-sm font-medium text-ink transition hover:bg-brass2 disabled:opacity-40"
+          >
+            {saving ? 'Koduję…' : 'Zapisz adres'}
+          </button>
+          {done && <span className="text-sm text-go">✓ Zapisano</span>}
+          {!done && geocoded && (
+            <span className="text-xs font-medium text-go">Adres zakodowany — dystanse aktywne</span>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Security() {
   const [next, setNext] = useState('')
   const [conf, setConf] = useState('')
@@ -83,7 +167,7 @@ function Security() {
       setNext(''); setConf(''); setDone(true)
       setTimeout(() => setDone(false), 3000)
     } catch (e: unknown) {
-      setErr(e instanceof Error ? e.message : String(e))
+      setErr(errMsg(e))
     } finally {
       setSaving(false)
     }

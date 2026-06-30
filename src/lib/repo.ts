@@ -110,9 +110,33 @@ export interface UserFull {
   rankPct: number
   provinces: string[]
   managerId: string | null
+  homeAddress: string | null
+  homeLat: number | null
+  homeLng: number | null
 }
 export async function getUser(id: string): Promise<UserFull | null> {
-  return repo.get<UserFull>('users', id)
+  const u = await repo.get<UserFull>('users', id)
+  if (!u) return u
+  // PostgREST zwraca numeric jako string → domknij lat/lng na Number.
+  return {
+    ...u,
+    homeLat: u.homeLat == null ? null : Number(u.homeLat),
+    homeLng: u.homeLng == null ? null : Number(u.homeLng),
+  }
+}
+
+/* Zapis bazy dojazdu (adres + geokod). Pola niewrażliwe → RLS users_update_self
+ * przepuszcza właściciela (trigger guard ich nie blokuje). */
+export async function updateHomeBase(
+  id: string,
+  patch: { homeAddress: string | null; homeLat: number | null; homeLng: number | null },
+): Promise<UserFull> {
+  const u = await repo.update<UserFull>('users', id, patch)
+  return {
+    ...u,
+    homeLat: u.homeLat == null ? null : Number(u.homeLat),
+    homeLng: u.homeLng == null ? null : Number(u.homeLng),
+  }
 }
 /* Edycja własnego profilu — tylko pola niewrażliwe (imię/nazwisko/telefon).
  * Pola wrażliwe (rola/ranga/%/struktura) blokuje trigger app.users_guard_sensitive. */
@@ -128,6 +152,62 @@ export async function updateProfile(
 export async function changePassword(newPassword: string): Promise<void> {
   const { error } = await supabase.auth.updateUser({ password: newPassword })
   if (error) throw new Error(error.message)
+}
+
+/* ── Geo (Mapbox): geokodowanie adresu bazy + macierz dystansów do klientów ──
+ * Token publiczny (pk., URL-restricted) ten sam co mapa. Wywołania lecą z
+ * przeglądarki — referer = dozwolona domena, więc restrykcja przepuszcza. */
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
+
+export interface GeoPoint {
+  lat: number
+  lng: number
+  placeName: string
+}
+/* Adres → współrzędne (pierwsze trafienie, ograniczone do PL). null = brak tokenu/wyniku. */
+export async function geocodeAddress(query: string): Promise<GeoPoint | null> {
+  if (!MAPBOX_TOKEN || !query.trim()) return null
+  const url =
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query.trim())}.json` +
+    `?access_token=${MAPBOX_TOKEN}&country=pl&language=pl&limit=1`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Geokodowanie nieudane (${res.status})`)
+  const data = (await res.json()) as { features?: { center: [number, number]; place_name: string }[] }
+  const f = data.features?.[0]
+  if (!f) return null
+  return { lng: f.center[0], lat: f.center[1], placeName: f.place_name }
+}
+
+export interface BaseDistance {
+  meters: number | null
+  seconds: number | null
+}
+/* Dystans + czas jazdy od bazy do każdego z punktów (Matrix API, profil driving).
+ * Zwraca tablicę równoległą do `dests`. Limit Mapbox = 25 współrzędnych/żądanie
+ * (1 baza + 24 cele) → batchujemy po 24. */
+export async function matrixFromBase(
+  base: { lat: number; lng: number },
+  dests: { lat: number; lng: number }[],
+): Promise<BaseDistance[]> {
+  if (!MAPBOX_TOKEN || dests.length === 0) return dests.map(() => ({ meters: null, seconds: null }))
+  const out: BaseDistance[] = []
+  for (let i = 0; i < dests.length; i += 24) {
+    const batch = dests.slice(i, i + 24)
+    const coords = [base, ...batch].map((p) => `${p.lng},${p.lat}`).join(';')
+    const url =
+      `https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${coords}` +
+      `?sources=0&annotations=distance,duration&access_token=${MAPBOX_TOKEN}`
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Macierz dystansów nieudana (${res.status})`)
+    const data = (await res.json()) as { distances?: number[][]; durations?: number[][] }
+    // sources=0 → jeden wiersz; [0] to baza→baza, pomijamy.
+    const dist = data.distances?.[0] ?? []
+    const dur = data.durations?.[0] ?? []
+    for (let j = 0; j < batch.length; j++) {
+      out.push({ meters: dist[j + 1] ?? null, seconds: dur[j + 1] ?? null })
+    }
+  }
+  return out
 }
 
 /* ── Admin: lista kont + zmiana pól wrażliwych przez serwerowe RPC (B2.3) ── */
