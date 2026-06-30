@@ -42,6 +42,7 @@ export default function Umowy() {
 
   return (
     <div>
+      <div className="kicker">Główne</div>
       <h1 className="text-2xl font-semibold text-cream">Umowy i prowizje</h1>
       <p className="mt-1 text-steel">Twoje umowy, transze i zarobki — zakres wg RLS.</p>
 

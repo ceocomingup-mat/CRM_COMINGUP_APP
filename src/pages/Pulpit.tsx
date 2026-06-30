@@ -77,6 +77,7 @@ export default function Pulpit() {
 
   return (
     <div className="max-w-3xl">
+      <div className="kicker">Pulpit</div>
       <h1 className="text-2xl font-semibold text-cream">Cześć, {fullName} 👋</h1>
       <p className="mt-1 text-steel">Pulpit — przegląd Twoich danych.</p>
 

@@ -84,6 +84,7 @@ export default function Zadania() {
     <div className="max-w-3xl">
       <div className="flex items-start justify-between gap-3">
         <div>
+          <div className="kicker">Główne</div>
           <h1 className="text-2xl font-semibold text-cream">Zadania</h1>
           <p className="mt-1 text-steel">Twoja lista „do zrobienia" — odhaczaj i dodawaj.</p>
         </div>

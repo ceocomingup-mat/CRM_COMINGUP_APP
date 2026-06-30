@@ -24,6 +24,7 @@ export default function Kalkulator() {
 
   return (
     <div className="max-w-2xl">
+      <div className="kicker">Motywacja</div>
       <h1 className="text-2xl font-semibold text-cream">Kalkulator prowizji</h1>
       <p className="mt-1 text-steel">
         Policz prowizję z Masy Marży i swojej stawki — wzór jak w silniku rozliczeń.

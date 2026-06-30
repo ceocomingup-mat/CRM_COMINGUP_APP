@@ -41,7 +41,8 @@ export default function Klienci() {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-cream">Klienci</h1>
+        <div><div className="kicker">Główne</div>
+        <h1 className="text-2xl font-semibold text-cream">Klienci</h1></div>
         {clients && (
           <span className="text-sm text-steel">{clients.length} widocznych</span>
         )}

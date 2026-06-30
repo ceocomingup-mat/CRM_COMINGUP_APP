@@ -39,7 +39,8 @@ export default function Leady() {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-cream">Leady</h1>
+        <div><div className="kicker">Główne</div>
+        <h1 className="text-2xl font-semibold text-cream">Leady</h1></div>
         {leads && (
           <span className="text-sm text-steel">
             {leads.length} widocznych · {free} wolnych

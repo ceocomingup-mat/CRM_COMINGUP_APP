@@ -52,6 +52,7 @@ export default function Zespol() {
   if (!allowed)
     return (
       <div className="max-w-2xl">
+        <div className="kicker">Manager</div>
         <h1 className="text-2xl font-semibold text-cream">Zespół</h1>
         <p className="mt-4 rounded-lg bg-warn/15 px-3 py-2 text-sm text-warn">
           Ten widok jest dostępny dla managerów, dyrektorów i administratorów.
@@ -64,7 +65,8 @@ export default function Zespol() {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-cream">Zespół</h1>
+        <div><div className="kicker">Manager</div>
+        <h1 className="text-2xl font-semibold text-cream">Zespół</h1></div>
         {rows && (
           <span className="flex items-center gap-2 text-sm text-steel">
             {live && (

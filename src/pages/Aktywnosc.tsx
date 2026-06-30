@@ -61,7 +61,8 @@ export default function Aktywnosc() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-cream">Aktywność</h1>
+        <div><div className="kicker">Narzędzia</div>
+        <h1 className="text-2xl font-semibold text-cream">Aktywność</h1></div>
         {live && (
           <span className="inline-flex items-center gap-1.5 text-sm text-go">
             <span className="h-1.5 w-1.5 rounded-full bg-go" />

@@ -44,6 +44,7 @@ export default function Statystyki() {
 
   return (
     <div className="max-w-3xl">
+      <div className="kicker">Narzędzia</div>
       <h1 className="text-2xl font-semibold text-cream">Statystyki</h1>
       <p className="mt-1 text-steel">Przekrój Twoich klientów i leadów (zakres wg RLS).</p>
 

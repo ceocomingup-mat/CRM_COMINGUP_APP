@@ -236,6 +236,7 @@ export default function Mapa() {
     <div>
       <div className="flex items-baseline justify-between">
         <div>
+          <div className="kicker">Narzędzia</div>
           <h1 className="text-2xl font-semibold text-cream">Mapa klientów</h1>
           <p className="mt-1 text-steel">
             Lokalizacje Twoich klientów (kolor = status). Kliknij pinezkę po szczegóły

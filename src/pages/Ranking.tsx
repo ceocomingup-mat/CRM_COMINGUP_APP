@@ -47,6 +47,7 @@ export default function Ranking() {
 
   return (
     <div className="max-w-3xl">
+      <div className="kicker">Motywacja</div>
       <h1 className="text-2xl font-semibold text-cream">Ranking doradców</h1>
       <p className="mt-1 text-steel">Wyniki w Twojej strukturze — bieżący miesiąc (umowy, potem MM).</p>
 

@@ -41,6 +41,7 @@ export default function Admin() {
 
   return (
     <div className="max-w-3xl">
+      <div className="kicker">Administracja</div>
       <h1 className="text-2xl font-semibold text-cream">Administracja — konta</h1>
       <p className="mt-1 text-steel">
         Role, rangi i stawki zmieniają się serwerowo (RPC z gardą admina, audyt w events).

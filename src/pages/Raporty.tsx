@@ -118,6 +118,7 @@ export default function Raporty() {
     <div>
       <div className="flex items-baseline justify-between">
         <div>
+          <div className="kicker">Finanse</div>
           <h1 className="text-2xl font-semibold text-cream">Raport miesięczny</h1>
           <p className="mt-1 text-steel">Cel vs realizacja struktury — {monthLabel}</p>
         </div>

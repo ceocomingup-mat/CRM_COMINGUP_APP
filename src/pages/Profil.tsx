@@ -40,6 +40,7 @@ export default function Profil() {
 
   return (
     <div className="max-w-2xl">
+      <div className="kicker">Konto</div>
       <h1 className="text-2xl font-semibold text-cream">Profil</h1>
 
       {error && (

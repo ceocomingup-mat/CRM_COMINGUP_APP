@@ -37,6 +37,7 @@ export default function Aktualnosci() {
 
   return (
     <div className="max-w-3xl">
+      <div className="kicker">Narzędzia</div>
       <h1 className="text-2xl font-semibold text-cream">Aktualności</h1>
       <p className="mt-1 text-steel">Ogłoszenia i komunikaty dla zespołu.</p>
 

@@ -43,6 +43,7 @@ export default function Wsparcie() {
 
   return (
     <div className="max-w-3xl">
+      <div className="kicker">Narzędzia</div>
       <h1 className="text-2xl font-semibold text-cream">Wsparcie</h1>
       <p className="mt-1 text-steel">Szukaj odpowiedzi i przydatnych kontaktów.</p>
 

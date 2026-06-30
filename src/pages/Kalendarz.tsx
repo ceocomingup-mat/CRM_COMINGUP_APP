@@ -67,6 +67,7 @@ export default function Kalendarz() {
 
   return (
     <div className="max-w-3xl">
+      <div className="kicker">Główne</div>
       <h1 className="text-2xl font-semibold text-cream">Kalendarz</h1>
       <p className="mt-1 text-steel">Nadchodzące spotkania, terminy i wydarzenia.</p>
 
