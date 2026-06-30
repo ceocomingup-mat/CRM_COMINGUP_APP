@@ -199,6 +199,91 @@ export function subscribeTeam(onChange: () => void): () => void {
   }
 }
 
+/* ── B13 front: Umowy/Prowizje (v_commission_totals + v_user_stats, RLS) ── */
+export interface UserStats {
+  userId: string
+  contractsAllTime: number
+  mmAllTime: number
+  monthContracts: number
+  monthMm: number
+  ownTranchesTotal: number
+  ownTranchesPaid: number
+  ownTranchesInPlay: number
+  overrideIncomeTotal: number
+}
+export interface CommissionRow {
+  id: string
+  advisorId: string
+  mmNetto: number
+  rate: number
+  contractDate: string | null
+  mmApproved: boolean
+  totalTranches: number
+  totalPaid: number
+  totalInPlay: number
+  t1Amount: number | null
+  t1DueDate: string | null
+  t1Paid: boolean | null
+  t2Amount: number | null
+  t2DueDate: string | null
+  t2Paid: boolean | null
+  overrideTotal: number
+}
+export interface CommissionMeta {
+  id: string
+  clientId: string | null
+  product: string | null
+}
+
+const num = (v: unknown) => Number(v ?? 0)
+
+export async function getMyStats(userId: string): Promise<UserStats | null> {
+  const { data, error } = await supabase
+    .from('v_user_stats')
+    .select(
+      'user_id, contracts_all_time, mm_all_time, month_contracts, month_mm, own_tranches_total, own_tranches_paid, own_tranches_in_play, override_income_total',
+    )
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  if (!data) return null
+  const o = rawRepo.fromDb<UserStats>('v_user_stats', data)
+  return {
+    ...o,
+    contractsAllTime: num(o.contractsAllTime),
+    mmAllTime: num(o.mmAllTime),
+    monthContracts: num(o.monthContracts),
+    monthMm: num(o.monthMm),
+    ownTranchesTotal: num(o.ownTranchesTotal),
+    ownTranchesPaid: num(o.ownTranchesPaid),
+    ownTranchesInPlay: num(o.ownTranchesInPlay),
+    overrideIncomeTotal: num(o.overrideIncomeTotal),
+  }
+}
+
+export async function listCommissions(): Promise<CommissionRow[]> {
+  const { data, error } = await supabase.from('v_commission_totals').select('*')
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((r) => {
+    const o = rawRepo.fromDb<CommissionRow>('v_commission_totals', r)
+    return {
+      ...o,
+      mmNetto: num(o.mmNetto),
+      rate: num(o.rate),
+      totalTranches: num(o.totalTranches),
+      totalPaid: num(o.totalPaid),
+      totalInPlay: num(o.totalInPlay),
+      t1Amount: o.t1Amount == null ? null : num(o.t1Amount),
+      t2Amount: o.t2Amount == null ? null : num(o.t2Amount),
+      overrideTotal: num(o.overrideTotal),
+    }
+  })
+}
+
+export async function listCommissionMeta(): Promise<CommissionMeta[]> {
+  return repo.list<CommissionMeta>('commissions')
+}
+
 /* ── B9: Szkolenia + baza wiedzy (materials / qa_items / tests / test_attempts) ── */
 export interface Material {
   id: string

@@ -8,6 +8,8 @@ import Klienci from './pages/Klienci'
 import KlientKarta from './pages/KlientKarta'
 import Leady from './pages/Leady'
 import LeadKarta from './pages/LeadKarta'
+import Umowy from './pages/Umowy'
+import Kalkulator from './pages/Kalkulator'
 import Zespol from './pages/Zespol'
 import Raporty from './pages/Raporty'
 import Aktywnosc from './pages/Aktywnosc'
@@ -47,6 +49,8 @@ function App() {
           <Route path="klienci/:id" element={<KlientKarta />} />
           <Route path="leady" element={<Leady />} />
           <Route path="leady/:id" element={<LeadKarta />} />
+          <Route path="umowy" element={<Umowy />} />
+          <Route path="kalkulator" element={<Kalkulator />} />
           <Route path="aktywnosc" element={<Aktywnosc />} />
           <Route path="szkolenia" element={<Szkolenia />} />
           <Route path="materialy" element={<Materialy />} />
