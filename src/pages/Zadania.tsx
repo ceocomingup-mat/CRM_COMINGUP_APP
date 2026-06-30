@@ -143,7 +143,7 @@ export default function Zadania() {
                 )}
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1">
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_STYLE[t.priority] ?? 'bg-surface text-muted'}`}>
+                <span className={`badge rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_STYLE[t.priority] ?? 'bg-surface text-muted'}`}>
                   {PRIORITY_LABEL[t.priority] ?? t.priority}
                 </span>
                 <span className={`text-xs font-medium ${di.cls}`}>{di.label}</span>

@@ -130,7 +130,7 @@ export default function Szkolenia() {
                 <span className="text-steel">próg zaliczenia: {t.passingScore ?? '—'}%</span>
                 {best ? (
                   <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                    className={`badge rounded-full px-2 py-0.5 text-xs font-medium ${
                       best.passed ? 'bg-go/15 text-go' : 'bg-warn/15 text-warn'
                     }`}
                   >

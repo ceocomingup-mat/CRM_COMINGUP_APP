@@ -151,7 +151,7 @@ function TrancheCell({
     <div>
       <span className="tabular-nums text-cream">{fmt(amount)}</span>
       <span
-        className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${
+        className={`ml-2 badge rounded-full px-2 py-0.5 text-xs font-medium ${
           paid ? 'bg-go/15 text-go' : 'bg-warn/15 text-warn'
         }`}
       >

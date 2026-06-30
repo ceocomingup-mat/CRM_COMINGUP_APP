@@ -28,7 +28,7 @@ function barColor(p: number | null): string {
 function PaceTag({ ratio }: { ratio: number | null }) {
   const b = paceBadge(ratio)
   return (
-    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${b.cls}`}>
+    <span className={`inline-block badge rounded-full px-2 py-0.5 text-xs font-medium ${b.cls}`}>
       {b.label}
     </span>
   )

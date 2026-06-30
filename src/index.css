@@ -71,6 +71,18 @@ h1, h2, h3 {
    specyficzności, więc hover (klasa Tailwind) dalej wygrywa. */
 :where(table) tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
 
+/* Badge statusowy z kropką wiodącą (jak .badge w prototypie). Kropka = kolor
+   tekstu (currentColor), więc pasuje do tonu (go/warn/bad/info). */
+.badge { display: inline-flex; align-items: center; gap: 6px; }
+.badge::before {
+  content: "";
+  width: 5px; height: 5px;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
 /* Subtelny pasek przewijania pod ciemny motyw */
 * { scrollbar-color: var(--color-line2) transparent; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }

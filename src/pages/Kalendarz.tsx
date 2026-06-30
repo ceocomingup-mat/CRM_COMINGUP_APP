@@ -94,7 +94,7 @@ export default function Kalendarz() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       {ev.type && TYPE_STYLE[ev.type] && (
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_STYLE[ev.type]}`}>
+                        <span className={`badge rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_STYLE[ev.type]}`}>
                           {TYPE_LABEL[ev.type] ?? ev.type}
                         </span>
                       )}

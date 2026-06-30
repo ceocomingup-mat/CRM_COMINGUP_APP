@@ -198,7 +198,7 @@ export default function Pulpit() {
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1">
                     <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      className={`badge rounded-full px-2 py-0.5 text-xs font-medium ${
                         PRIORITY_STYLE[t.priority] ?? 'bg-surface text-muted'
                       }`}
                     >
@@ -354,7 +354,7 @@ function PaceCard({
     <div className="rounded-2xl border border-line bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <div className="text-xs uppercase tracking-wide text-steel">{label}</div>
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${b.cls}`}>{b.label}</span>
+        <span className={`badge rounded-full px-2 py-0.5 text-xs font-medium ${b.cls}`}>{b.label}</span>
       </div>
       <div className="mt-2 flex items-baseline justify-between text-sm">
         <span className="font-semibold text-cream">{fmt(actual)}</span>

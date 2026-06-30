@@ -65,7 +65,7 @@ export default function Aktualnosci() {
                 {n.title}
               </h2>
               {n.priority && PRIORITY_STYLE[n.priority] && (
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_STYLE[n.priority]}`}>
+                <span className={`shrink-0 badge rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_STYLE[n.priority]}`}>
                   {n.priority === 'high' ? 'Ważne' : n.priority === 'medium' ? 'Istotne' : 'Info'}
                 </span>
               )}

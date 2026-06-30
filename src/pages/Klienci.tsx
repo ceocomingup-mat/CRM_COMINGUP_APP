@@ -93,7 +93,7 @@ export default function Klienci() {
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                      className={`inline-block badge rounded-full px-2 py-0.5 text-xs font-medium ${
                         STATUS_STYLE[c.status] ?? 'bg-surface text-muted'
                       }`}
                     >
