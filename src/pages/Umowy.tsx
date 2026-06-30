@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useProfile } from '../components/Layout'
+import Avatar from '../components/Avatar'
 import {
   getMyStats,
   listClients,
@@ -84,7 +85,16 @@ export default function Umowy() {
             <tbody className="divide-y divide-line">
               {rows.map((c) => (
                 <tr key={c.id} className="hover:bg-surface">
-                  <td className="px-4 py-3 font-medium text-cream">{names[c.id] || '—'}</td>
+                  <td className="px-4 py-3">
+                    {names[c.id] ? (
+                      <div className="flex items-center gap-3">
+                        <Avatar name={names[c.id]} />
+                        <span className="font-medium text-cream">{names[c.id]}</span>
+                      </div>
+                    ) : (
+                      <span className="text-muted">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-right tabular-nums text-muted">{fmt(c.mmNetto)}</td>
                   <td className="px-4 py-3 text-right tabular-nums text-muted">{c.rate}%</td>
                   <td className="px-4 py-3 text-right tabular-nums font-medium text-brass">

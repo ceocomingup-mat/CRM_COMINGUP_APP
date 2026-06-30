@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { listClients, listLeads, type Client, type Lead } from '../lib/repo'
+import { SOURCE_LABEL, label } from '../lib/labels'
 
 const STATUS_LABEL: Record<string, string> = {
   active: 'Aktywni', won: 'Wygrani', lost: 'Utraceni', paused: 'Wstrzymani',
@@ -71,7 +72,7 @@ export default function Statystyki() {
             </Panel>
             <Panel title="Klienci wg źródła">
               {data.bySource.map(([k, v]) => (
-                <Bar key={k} label={k} value={v} max={clients.length} />
+                <Bar key={k} label={label(SOURCE_LABEL, k) ?? k} value={v} max={clients.length} />
               ))}
             </Panel>
             <Panel title="Aktywni wg etapu">
