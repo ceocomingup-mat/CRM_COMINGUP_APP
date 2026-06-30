@@ -43,6 +43,8 @@ export default function Klienci() {
       .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)))
   }, [])
 
+  const maxStage = Object.keys(stageNames).reduce((m, k) => Math.max(m, Number(k)), 0)
+
   return (
     <div>
       <div className="flex items-baseline justify-between">
@@ -101,6 +103,16 @@ export default function Klienci() {
                       E{c.currentStage}
                       {stageNames[c.currentStage] ? ` · ${stageNames[c.currentStage]}` : ''}
                     </span>
+                    {maxStage > 0 && (
+                      <div className="mt-1.5 flex gap-0.5">
+                        {Array.from({ length: maxStage }, (_, i) => (
+                          <span
+                            key={i}
+                            className={`h-1 w-2.5 rounded-full ${i < c.currentStage ? 'bg-brass' : 'bg-line2'}`}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <span
