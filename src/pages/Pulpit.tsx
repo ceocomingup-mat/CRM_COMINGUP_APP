@@ -92,19 +92,22 @@ export default function Pulpit() {
           <h2 className="mt-10 mb-3 text-lg font-semibold text-cream">
             Twoje tempo — ten miesiąc
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <PaceCard
-              label="Masa Marży"
-              actual={myReport.actualMm}
-              goal={myReport.goalMm}
-              fmt={(n) => n.toLocaleString('pl-PL') + ' zł'}
-            />
-            <PaceCard
-              label="Umowy"
-              actual={myReport.actualContracts}
-              goal={myReport.goalContracts}
-              fmt={(n) => String(n)}
-            />
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(220px,260px)_1fr]">
+            <PaceGauge ratio={overallPace(myReport)} />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <PaceCard
+                label="Masa Marży"
+                actual={myReport.actualMm}
+                goal={myReport.goalMm}
+                fmt={(n) => n.toLocaleString('pl-PL') + ' zł'}
+              />
+              <PaceCard
+                label="Umowy"
+                actual={myReport.actualContracts}
+                goal={myReport.goalContracts}
+                fmt={(n) => String(n)}
+              />
+            </div>
           </div>
         </>
       )}
@@ -161,6 +164,60 @@ export default function Pulpit() {
         Liczby i zadania zależą od Twojej roli — ochrona danych (RLS) pilnuje, że
         doradca widzi mniej niż dyrektor, a dyrektor mniej niż admin.
       </p>
+    </div>
+  )
+}
+
+// Łączne tempo = średnia ze wskaźników MM i umów (te, dla których jest cel).
+function overallPace(r: MonthReportRow): number | null {
+  const e = elapsedFractionOfMonth()
+  const ratios = [
+    paceRatio(r.actualMm, r.goalMm, e),
+    paceRatio(r.actualContracts, r.goalContracts, e),
+  ].filter((x): x is number => x != null)
+  return ratios.length ? ratios.reduce((a, b) => a + b, 0) / ratios.length : null
+}
+
+// Radialny wskaźnik tempa (jak „PLAN" w prototypie): igła + % w środku.
+function PaceGauge({ ratio }: { ratio: number | null }) {
+  const cx = 110, cy = 110, r = 84
+  const frac = ratio == null ? 0.5 : Math.min(Math.max((ratio - 0.5) / 1.0, 0), 1)
+  const ang = ((180 - frac * 180) * Math.PI) / 180
+  const nx = cx + r * 0.72 * Math.cos(ang)
+  const ny = cy - r * 0.72 * Math.sin(ang)
+  const b = paceBadge(ratio)
+  const color =
+    ratio == null ? '#828d9b' : ratio >= 0.9 ? '#33cf86' : ratio >= 0.75 ? '#e6ad42' : '#ef5b60'
+  const pct = ratio == null ? '—' : `${ratio >= 1 ? '+' : ''}${Math.round((ratio - 1) * 100)}%`
+  const arc = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`
+  return (
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-card p-5 shadow-sm">
+      <svg viewBox="0 0 220 128" className="w-full max-w-[240px]">
+        <path d={arc} fill="none" stroke="#3b4552" strokeWidth="12" strokeLinecap="round" />
+        {ratio != null && (
+          <path
+            d={arc}
+            fill="none"
+            stroke={color}
+            strokeWidth="12"
+            strokeLinecap="round"
+            pathLength={100}
+            strokeDasharray={`${frac * 100} 100`}
+          />
+        )}
+        <line x1={cx} y1={cy} x2={nx} y2={ny} stroke={color} strokeWidth="3" strokeLinecap="round" />
+        <circle cx={cx} cy={cy} r="5" fill={color} />
+        <text
+          x={cx}
+          y={cy - 24}
+          textAnchor="middle"
+          style={{ fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700, fontSize: 30, fill: '#f6f4ef' }}
+        >
+          {pct}
+        </text>
+      </svg>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-steel">Tempo vs plan</div>
+      <span className={`mt-2 rounded-full px-2.5 py-0.5 text-xs font-medium ${b.cls}`}>{b.label}</span>
     </div>
   )
 }
