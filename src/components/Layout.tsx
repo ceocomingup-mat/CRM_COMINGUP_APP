@@ -33,6 +33,7 @@ const NAV = [
   { to: '/aktualnosci', label: 'Aktualności', end: false },
   { to: '/aktywnosc', label: 'Aktywność', end: false },
   { to: '/ranking', label: 'Ranking', end: false, roles: MANAGER_PLUS },
+  { to: '/zawody', label: 'Zawody', end: false },
   { to: '/statystyki', label: 'Statystyki', end: false },
   { to: '/szkolenia', label: 'Szkolenia', end: false },
   { to: '/materialy', label: 'Materiały', end: false },

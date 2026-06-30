@@ -498,6 +498,32 @@ export async function listTeamStats(): Promise<UserStats[]> {
   })
 }
 
+/* ── Zawody (contests) — read-all dla zalogowanych (RLS using true) ── */
+export interface Contest {
+  id: string
+  title: string | null
+  metric: string | null // 'mm' | 'umowy'
+  period: string | null
+  startTs: string | null
+  endTs: string | null
+  scope: string | null
+  rewardBadge: string | null
+  rewardCash: number | null
+  rewardText: string | null
+  status: string // 'active' | 'closed'
+  winnerId: string | null
+  winnerValue: number | null
+  closedAt: string | null
+}
+export async function listContests(): Promise<Contest[]> {
+  const rows = await repo.list<Contest>('contests')
+  return rows.map((c) => ({
+    ...c,
+    rewardCash: c.rewardCash == null ? null : Number(c.rewardCash),
+    winnerValue: c.winnerValue == null ? null : Number(c.winnerValue),
+  }))
+}
+
 /* ── Aktualności (news) ── */
 export interface News {
   id: string

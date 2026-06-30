@@ -17,6 +17,7 @@ import Statystyki from './pages/Statystyki'
 import Kalendarz from './pages/Kalendarz'
 import Admin from './pages/Admin'
 import Ustawienia from './pages/Ustawienia'
+import Zawody from './pages/Zawody'
 import Kalkulator from './pages/Kalkulator'
 import Zespol from './pages/Zespol'
 import Raporty from './pages/Raporty'
@@ -68,6 +69,7 @@ function App() {
           <Route path="kalendarz" element={<Kalendarz />} />
           <Route path="admin" element={<Admin />} />
           <Route path="ustawienia" element={<Ustawienia />} />
+          <Route path="zawody" element={<Zawody />} />
           <Route path="szkolenia" element={<Szkolenia />} />
           <Route path="materialy" element={<Materialy />} />
           <Route path="wsparcie" element={<Wsparcie />} />
