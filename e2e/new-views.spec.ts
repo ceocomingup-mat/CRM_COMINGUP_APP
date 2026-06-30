@@ -17,8 +17,8 @@ async function login(page: Page, email: string) {
 test('Admin: administrator widzi panel kont, doradca jest zablokowany', async ({ page }) => {
   // admin — pozycja menu + tabela kont
   await login(page, 'admin@comingup.pl')
-  await expect(page.getByRole('link', { name: 'Administracja', exact: true })).toBeVisible()
-  await page.getByRole('link', { name: 'Administracja', exact: true }).click()
+  await expect(page.getByRole('link', { name: 'Panel admina', exact: true })).toBeVisible()
+  await page.getByRole('link', { name: 'Panel admina', exact: true }).click()
   await expect(page.getByRole('heading', { level: 1 })).toContainText(/Administracja/)
   await expect(page.locator('table tbody tr').first()).toBeVisible() // poczekaj na dociągnięcie kont
   const rows = await page.locator('table tbody tr').count()
@@ -28,7 +28,7 @@ test('Admin: administrator widzi panel kont, doradca jest zablokowany', async ({
   await page.getByRole('button', { name: 'Wyloguj' }).click()
   await expect(page.locator('input[type="email"]')).toBeVisible()
   await login(page, 'maria@comingup.pl')
-  await expect(page.getByRole('link', { name: 'Administracja', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Panel admina', exact: true })).toHaveCount(0)
   await page.goto('/admin')
   await expect(page.getByText(/dostępny tylko dla administratorów/)).toBeVisible()
 })

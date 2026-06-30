@@ -31,19 +31,19 @@ test('logowanie: złe hasło odrzucone', async ({ page }) => {
 test('admin: wszystkie widoki renderują + nawigacja pełna', async ({ page }) => {
   await login(page, 'admin@comingup.pl')
 
-  for (const item of ['Zespół', 'Raporty', 'Szkolenia', 'Materiały', 'Wsparcie']) {
+  for (const item of ['Zespół', 'Rozliczenia', 'Strefa Szkoleniowa', 'Materiały', 'Wsparcie']) {
     await expect(page.getByRole('link', { name: item, exact: true })).toBeVisible()
   }
 
   const pages: [string, RegExp][] = [
     ['Klienci', /Klienci/],
-    ['Leady', /Leady/],
+    ['Baza leadów', /Leady/],
     ['Aktywność', /Aktywność/],
-    ['Szkolenia', /Szkolenia i baza wiedzy/],
+    ['Strefa Szkoleniowa', /Szkolenia i baza wiedzy/],
     ['Materiały', /Materiały/],
     ['Wsparcie', /Wsparcie/],
     ['Zespół', /Zespół/],
-    ['Raporty', /Raport miesięczny/],
+    ['Rozliczenia', /Raport miesięczny/],
   ]
   for (const [nav, heading] of pages) {
     await page.getByRole('link', { name: nav, exact: true }).click()
@@ -74,7 +74,7 @@ test('doradca (Maria): RLS + nawigacja ograniczona, brak Zespół/Raporty', asyn
 
   // brak pozycji menedżerskich
   await expect(page.getByRole('link', { name: 'Zespół', exact: true })).toHaveCount(0)
-  await expect(page.getByRole('link', { name: 'Raporty', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Rozliczenia', exact: true })).toHaveCount(0)
 
   // RLS: doradca widzi 14 swoich klientów
   await page.getByRole('link', { name: 'Klienci', exact: true }).click()
@@ -95,7 +95,7 @@ test('Wsparcie: wyszukiwarka filtruje bazę wiedzy', async ({ page }) => {
 
 test('Szkolenia: lista testów wiedzy widoczna', async ({ page }) => {
   await login(page, 'maria@comingup.pl')
-  await page.getByRole('link', { name: 'Szkolenia', exact: true }).click()
+  await page.getByRole('link', { name: 'Strefa Szkoleniowa', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Testy wiedzy' })).toBeVisible()
   await expect(page.getByText('Kwalifikacja CP — podstawy')).toBeVisible()
   await logout(page)

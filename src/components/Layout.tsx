@@ -1,5 +1,10 @@
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState, type ComponentType } from 'react'
 import { Link, NavLink, Outlet, useLocation, useOutletContext } from 'react-router-dom'
+import {
+  LayoutGrid, Database, Users, FileText, ListChecks, Network, Map, CalendarDays,
+  Star, Trophy, Calculator, Activity, ClipboardList, Newspaper, History,
+  GraduationCap, BookOpen, LifeBuoy, Shield, User, Settings, Menu, X,
+} from 'lucide-react'
 import { signOut, type Profile } from '../lib/supabase'
 import ErrorBoundary from './ErrorBoundary'
 
@@ -19,37 +24,68 @@ const ROLE_LABEL: Record<string, string> = {
   doradca: 'Doradca',
 }
 
-// Pozycje menu; `roles` (gdy podane) ogranicza widoczność do wskazanych ról.
-// Zakres danych i tak pilnuje RLS — to tylko ukrycie nieprzydatnych pozycji.
+type Icon = ComponentType<{ className?: string }>
+interface NavItem {
+  to: string
+  label: string
+  icon: Icon
+  end?: boolean
+  roles?: string[]
+}
+// Pogrupowane menu (jak w projekcie). `roles` ogranicza widoczność; zakres danych
+// i tak pilnuje RLS. Grupa bez widocznych pozycji nie pokazuje nagłówka.
 const MANAGER_PLUS = ['admin', 'dyrektor', 'manager']
-const NAV = [
-  { to: '/', label: 'Pulpit', end: true },
-  { to: '/klienci', label: 'Klienci', end: false },
-  { to: '/leady', label: 'Leady', end: false },
-  { to: '/zadania', label: 'Zadania', end: false },
-  { to: '/kalendarz', label: 'Kalendarz', end: false },
-  { to: '/umowy', label: 'Umowy', end: false },
-  { to: '/kalkulator', label: 'Kalkulator', end: false },
-  { to: '/mapa', label: 'Mapa', end: false },
-  { to: '/aktualnosci', label: 'Aktualności', end: false },
-  { to: '/aktywnosc', label: 'Aktywność', end: false },
-  { to: '/ranking', label: 'Ranking', end: false, roles: MANAGER_PLUS },
-  { to: '/zawody', label: 'Zawody', end: false },
-  { to: '/statystyki', label: 'Statystyki', end: false },
-  { to: '/szkolenia', label: 'Szkolenia', end: false },
-  { to: '/materialy', label: 'Materiały', end: false },
-  { to: '/wsparcie', label: 'Wsparcie', end: false },
-  { to: '/zespol', label: 'Zespół', end: false, roles: MANAGER_PLUS },
-  { to: '/raporty', label: 'Raporty', end: false, roles: MANAGER_PLUS },
-  { to: '/admin', label: 'Administracja', end: false, roles: ['admin'] },
-  { to: '/ustawienia', label: 'Ustawienia', end: false },
+const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
+  {
+    label: 'Główne',
+    items: [
+      { to: '/', label: 'Pulpit', end: true, icon: LayoutGrid },
+      { to: '/leady', label: 'Baza leadów', icon: Database },
+      { to: '/klienci', label: 'Klienci', icon: Users },
+      { to: '/umowy', label: 'Umowy', icon: FileText },
+      { to: '/zadania', label: 'Zadania', icon: ListChecks },
+      { to: '/zespol', label: 'Zespół', icon: Network, roles: MANAGER_PLUS },
+    ],
+  },
+  {
+    label: 'Narzędzia',
+    items: [
+      { to: '/mapa', label: 'Mapa', icon: Map },
+      { to: '/kalendarz', label: 'Kalendarz', icon: CalendarDays },
+      { to: '/ranking', label: 'Ranking', icon: Star, roles: MANAGER_PLUS },
+      { to: '/zawody', label: 'Zawody', icon: Trophy },
+      { to: '/kalkulator', label: 'Kalkulator prowizji', icon: Calculator },
+      { to: '/statystyki', label: 'Statystyki', icon: Activity },
+      { to: '/raporty', label: 'Rozliczenia', icon: ClipboardList, roles: MANAGER_PLUS },
+      { to: '/aktualnosci', label: 'Aktualności', icon: Newspaper },
+      { to: '/aktywnosc', label: 'Aktywność', icon: History },
+      { to: '/szkolenia', label: 'Strefa Szkoleniowa', icon: GraduationCap },
+      { to: '/materialy', label: 'Materiały', icon: BookOpen },
+      { to: '/wsparcie', label: 'Wsparcie', icon: LifeBuoy },
+    ],
+  },
+  {
+    label: 'Administracja',
+    items: [{ to: '/admin', label: 'Panel admina', icon: Shield, roles: ['admin'] }],
+  },
+  {
+    label: 'Konto',
+    items: [
+      { to: '/profil', label: 'Profil', icon: User },
+      { to: '/ustawienia', label: 'Ustawienia', icon: Settings },
+    ],
+  },
 ]
 
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="grid h-9 w-9 place-items-center rounded-lg bg-brass font-bold text-ink">C</div>
-      <span className="font-semibold text-cream">ComingUP CRM</span>
+      <div className="grid h-9 w-9 place-items-center rounded-lg bg-brass font-display text-lg font-bold text-ink">
+        C
+      </div>
+      <span className="font-display text-base font-semibold tracking-wide text-cream">
+        Coming<span className="text-brass">UP</span>
+      </span>
     </div>
   )
 }
@@ -72,7 +108,13 @@ export default function Layout({
   }
 
   const fullName = `${profile.firstName} ${profile.lastName}`.trim() || profile.email
-  const items = NAV.filter((item) => !item.roles || item.roles.includes(profile.role))
+  const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase()
+
+  // Grupy z odfiltrowanymi pozycjami wg roli; puste grupy znikają.
+  const groups = NAV_GROUPS.map((g) => ({
+    ...g,
+    items: g.items.filter((i) => !i.roles || i.roles.includes(profile.role)),
+  })).filter((g) => g.items.length > 0)
 
   return (
     <div className="min-h-svh bg-surface">
@@ -83,9 +125,7 @@ export default function Layout({
           aria-label="Otwórz menu"
           className="grid h-9 w-9 place-items-center rounded-lg border border-line2 text-cream"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" />
-          </svg>
+          <Menu className="h-[18px] w-[18px]" />
         </button>
         <Logo />
       </header>
@@ -108,35 +148,58 @@ export default function Layout({
             aria-label="Zamknij menu"
             className="text-steel hover:text-cream md:hidden"
           >
-            ✕
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
-          {items.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 text-sm font-medium transition ${
-                  isActive ? 'bg-brass/10 text-brass' : 'text-muted hover:bg-surface'
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
+        <nav className="flex-1 overflow-y-auto px-3 pb-2">
+          {groups.map((group) => (
+            <div key={group.label} className="mb-1 border-t border-line/60 pt-2 first:border-t-0 first:pt-0">
+              <div className="px-3 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-steel">
+                {group.label}
+              </div>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const Ico = item.icon
+                  return (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.end}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                          isActive
+                            ? 'bg-brass/10 text-brass'
+                            : 'text-muted hover:bg-surface hover:text-cream'
+                        }`
+                      }
+                    >
+                      <Ico className="h-[18px] w-[18px] shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </NavLink>
+                  )
+                })}
+              </div>
+            </div>
           ))}
         </nav>
 
         <div className="border-t border-line px-4 py-3">
-          <Link to="/profil" className="block rounded-lg -mx-1 px-1 py-1 transition hover:bg-surface">
-            <div className="truncate text-sm font-medium text-cream">{fullName}</div>
-            <div className="text-xs text-steel">{ROLE_LABEL[profile.role] ?? profile.role} · profil</div>
+          <Link
+            to="/profil"
+            className="-mx-1 flex items-center gap-2.5 rounded-lg px-1 py-1 transition hover:bg-surface"
+          >
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brass/15 text-xs font-bold text-brass">
+              {initials || '?'}
+            </div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-medium text-cream">{fullName}</div>
+              <div className="text-xs text-steel">{ROLE_LABEL[profile.role] ?? profile.role}</div>
+            </div>
           </Link>
           <button
             onClick={logout}
-            className="mt-2 w-full rounded-lg border border-line2 px-3 py-1.5 text-sm text-muted transition hover:bg-surface"
+            className="mt-2 w-full rounded-lg border border-line2 px-3 py-1.5 text-sm text-muted transition hover:bg-surface hover:text-cream"
           >
             Wyloguj
           </button>
