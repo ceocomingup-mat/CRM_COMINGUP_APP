@@ -177,6 +177,22 @@ export async function listTasks(): Promise<Task[]> {
   return repo.list<Task>('tasks')
 }
 
+/* ── Kalendarz (calendar_events, RLS: własne + struktura/scope) ── */
+export interface CalendarEvent {
+  id: string
+  clientId: string | null
+  title: string | null
+  type: string | null
+  startTs: string | null
+  endTs: string | null
+  allDay: boolean
+  location: string | null
+  notes: string | null
+}
+export async function listCalendarEvents(): Promise<CalendarEvent[]> {
+  return repo.list<CalendarEvent>('calendarEvents')
+}
+
 /* Zadania — RLS: użytkownik czyta/edytuje/dodaje w swoim zakresie (assigned_to ∈ scope). */
 export async function setTaskStatus(id: string, status: string): Promise<Task> {
   return repo.update<Task>('tasks', id, { status })
