@@ -1,9 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useProfile } from '../components/Layout'
-import { listClients, getUser, matrixFromBase, type Client, type UserFull, type BaseDistance } from '../lib/repo'
+import {
+  listClients,
+  getUser,
+  matrixFromBase,
+  optimizeRoute,
+  type Client,
+  type UserFull,
+  type BaseDistance,
+  type OptimizedRoute,
+} from '../lib/repo'
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
 if (TOKEN) mapboxgl.accessToken = TOKEN
@@ -22,12 +31,21 @@ const STATUS_LABEL: Record<string, string> = {
   paused: 'Wstrzymany',
 }
 const BASE_COLOR = '#dca33c' // brass
+const MAX_STOPS = 11 // limit Mapbox Optimization API (12 współrzędnych = baza + 11)
 
 function fmtDist(d: BaseDistance): string {
   if (d.meters == null) return ''
   const km = d.meters >= 1000 ? `${(d.meters / 1000).toFixed(1)} km` : `${Math.round(d.meters)} m`
   const min = d.seconds == null ? '' : ` · ${Math.max(1, Math.round(d.seconds / 60))} min`
   return `🚗 ${km}${min} od bazy`
+}
+function fmtKm(meters: number): string {
+  return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`
+}
+function fmtMin(seconds: number): string {
+  const m = Math.round(seconds / 60)
+  if (m < 60) return `${m} min`
+  return `${Math.floor(m / 60)} h ${m % 60} min`
 }
 
 export default function Mapa() {
@@ -39,11 +57,23 @@ export default function Mapa() {
   const [user, setUser] = useState<UserFull | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // Planer trasy
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [route, setRoute] = useState<(OptimizedRoute & { stops: Client[] }) | null>(null)
+  const [planning, setPlanning] = useState(false)
+  const [planError, setPlanError] = useState<string | null>(null)
+
   useEffect(() => {
     Promise.all([listClients(), getUser(profile.id)])
       .then(([cs, u]) => { setClients(cs); setUser(u) })
       .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)))
   }, [profile.id])
+
+  const base = useMemo(
+    () => (user?.homeLat != null && user?.homeLng != null ? { lat: user.homeLat, lng: user.homeLng } : null),
+    [user],
+  )
+  const geoClients = useMemo(() => (clients ?? []).filter((c) => c.lat != null && c.lng != null), [clients])
 
   // Mapa + pinezki w JEDNYM efekcie (odporne na StrictMode). Dystanse od bazy
   // liczymy PRZED budową mapy (await Matrix) i wstrzykujemy do dymków.
@@ -54,10 +84,6 @@ export default function Mapa() {
 
     ;(async () => {
       const geo = clients.filter((c) => c.lat != null && c.lng != null)
-      const base =
-        user?.homeLat != null && user?.homeLng != null
-          ? { lat: user.homeLat, lng: user.homeLng }
-          : null
 
       let dists: BaseDistance[] = []
       if (base && geo.length) {
@@ -126,7 +152,72 @@ export default function Mapa() {
       map?.remove()
       mapRef.current = null
     }
-  }, [clients, user, navigate])
+  }, [clients, base, user, navigate])
+
+  // Rysowanie/odrysowanie trasy z planera (osobny efekt — nie przebudowuje mapy).
+  useEffect(() => {
+    const m = mapRef.current
+    if (!m) return
+    const SRC = 'planned-route'
+    const draw = () => {
+      if (m.getLayer(SRC)) m.removeLayer(SRC)
+      if (m.getSource(SRC)) m.removeSource(SRC)
+      if (!route) return
+      m.addSource(SRC, {
+        type: 'geojson',
+        data: { type: 'Feature', properties: {}, geometry: route.geometry },
+      })
+      m.addLayer({
+        id: SRC,
+        type: 'line',
+        source: SRC,
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': BASE_COLOR, 'line-width': 4, 'line-opacity': 0.85 },
+      })
+      const b = new mapboxgl.LngLatBounds()
+      route.geometry.coordinates.forEach((c) => b.extend(c as [number, number]))
+      if (!b.isEmpty()) m.fitBounds(b, { padding: 70, maxZoom: 13, duration: 400 })
+    }
+    if (m.isStyleLoaded()) draw()
+    else m.once('load', draw)
+    return () => {
+      const mm = mapRef.current
+      if (mm && mm.getLayer(SRC)) {
+        try { mm.removeLayer(SRC); mm.removeSource(SRC) } catch { /* mapa już usunięta */ }
+      }
+    }
+  }, [route])
+
+  function toggle(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else if (next.size < MAX_STOPS) next.add(id)
+      return next
+    })
+  }
+
+  async function plan() {
+    if (!base || selected.size === 0) return
+    setPlanning(true); setPlanError(null)
+    try {
+      const stops = geoClients.filter((c) => selected.has(c.id))
+      const r = await optimizeRoute(base, stops.map((c) => ({ lat: c.lat!, lng: c.lng! })))
+      if (!r) {
+        setPlanError('Nie udało się wyznaczyć trasy dla wybranych punktów.')
+        return
+      }
+      setRoute({ ...r, stops })
+    } catch (e: unknown) {
+      setPlanError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setPlanning(false)
+    }
+  }
+
+  function clearRoute() {
+    setRoute(null); setSelected(new Set()); setPlanError(null)
+  }
 
   if (!TOKEN)
     return (
@@ -138,8 +229,8 @@ export default function Mapa() {
       </div>
     )
 
-  const geoCount = clients?.filter((c) => c.lat != null && c.lng != null).length
-  const hasBase = user?.homeLat != null && user?.homeLng != null
+  const hasBase = base != null
+  const orderedStops = route ? route.order.map((i) => route.stops[i]) : []
 
   return (
     <div>
@@ -151,7 +242,7 @@ export default function Mapa() {
             {hasBase ? ' i dystans dojazdu' : ''}.
           </p>
         </div>
-        {geoCount != null && <span className="text-sm text-steel">{geoCount} na mapie</span>}
+        {clients != null && <span className="text-sm text-steel">{geoClients.length} na mapie</span>}
       </div>
 
       {error && (
@@ -161,28 +252,127 @@ export default function Mapa() {
       {!hasBase && (
         <p className="mt-4 rounded-lg bg-cardhi/60 px-3 py-2 text-sm text-muted">
           Ustaw <span className="font-medium text-cream">adres bazy dojazdu</span> w Ustawieniach, a
-          policzę dystans i czas dojazdu do każdego klienta.
+          policzę dystans, czas dojazdu i optymalną trasę do klientów.
         </p>
       )}
 
-      <div
-        ref={mapEl}
-        className="mt-5 h-[70vh] w-full overflow-hidden rounded-2xl border border-line shadow-sm"
-      />
+      <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_320px]">
+        <div>
+          <div
+            ref={mapEl}
+            className="h-[68vh] w-full overflow-hidden rounded-2xl border border-line shadow-sm"
+          />
+          <div className="mt-3 flex flex-wrap gap-4 text-xs text-steel">
+            {hasBase && (
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-full" style={{ background: BASE_COLOR }} />
+                Baza dojazdu
+              </span>
+            )}
+            {Object.entries(STATUS_LABEL).map(([k, label]) => (
+              <span key={k} className="inline-flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-full" style={{ background: STATUS_COLOR[k] }} />
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
 
-      <div className="mt-3 flex flex-wrap gap-4 text-xs text-steel">
+        {/* Planer trasy */}
         {hasBase && (
-          <span className="inline-flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded-full" style={{ background: BASE_COLOR }} />
-            Baza dojazdu
-          </span>
+          <aside className="rounded-2xl border border-line bg-card p-4 shadow-sm">
+            <div className="text-sm font-semibold text-cream">Planer trasy</div>
+            <p className="mt-1 text-xs text-steel">
+              Zaznacz klientów do odwiedzenia (do {MAX_STOPS}). Wyznaczę optymalną kolejność od bazy
+              i z powrotem.
+            </p>
+
+            {route ? (
+              <div className="mt-3">
+                <div className="rounded-lg bg-brass/10 px-3 py-2 text-sm text-cream">
+                  <span className="font-semibold text-brass">{fmtKm(route.distance)}</span> ·{' '}
+                  {fmtMin(route.duration)} · {orderedStops.length}{' '}
+                  {orderedStops.length === 1 ? 'przystanek' : 'przystanków'}
+                </div>
+                <ol className="mt-3 space-y-1.5">
+                  <li className="flex items-center gap-2 text-xs text-steel">
+                    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brass font-display text-[10px] font-bold text-ink">
+                      ⌂
+                    </span>
+                    Baza dojazdu
+                  </li>
+                  {orderedStops.map((c, idx) => (
+                    <li key={c.id} className="flex items-center gap-2 text-xs">
+                      <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-surface font-display text-[10px] font-bold text-cream">
+                        {idx + 1}
+                      </span>
+                      <button
+                        onClick={() => navigate(`/klienci/${c.id}`)}
+                        className="truncate text-left text-muted hover:text-brass"
+                      >
+                        {c.firstName} {c.lastName}
+                        <span className="text-steel"> · {c.city || c.province || ''}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+                <button
+                  onClick={clearRoute}
+                  className="mt-3 w-full rounded-lg border border-line2 px-3 py-2 text-sm text-muted transition hover:bg-surface"
+                >
+                  Wyczyść trasę
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="mt-3 max-h-[44vh] space-y-1 overflow-y-auto pr-1">
+                  {geoClients.length === 0 && (
+                    <p className="text-xs italic text-steel">Brak klientów z lokalizacją.</p>
+                  )}
+                  {geoClients.map((c) => {
+                    const on = selected.has(c.id)
+                    const disabled = !on && selected.size >= MAX_STOPS
+                    return (
+                      <label
+                        key={c.id}
+                        className={`flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition ${
+                          on ? 'bg-brass/10' : 'hover:bg-surface'
+                        } ${disabled ? 'opacity-40' : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={on}
+                          disabled={disabled}
+                          onChange={() => toggle(c.id)}
+                          className="accent-brass"
+                        />
+                        <span className="truncate text-cream">
+                          {c.firstName} {c.lastName}
+                          <span className="text-steel"> · {c.city || c.province || ''}</span>
+                        </span>
+                      </label>
+                    )
+                  })}
+                </div>
+                {planError && (
+                  <p className="mt-2 rounded-lg bg-bad/15 px-3 py-2 text-xs text-bad">{planError}</p>
+                )}
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-xs text-steel">
+                    {selected.size}/{MAX_STOPS} wybranych
+                  </span>
+                  <button
+                    onClick={plan}
+                    disabled={planning || selected.size === 0}
+                    className="rounded-lg bg-brass px-4 py-2 text-sm font-medium text-ink transition hover:bg-brass2 disabled:opacity-40"
+                  >
+                    {planning ? 'Liczę…' : 'Zaplanuj trasę'}
+                  </button>
+                </div>
+              </>
+            )}
+          </aside>
         )}
-        {Object.entries(STATUS_LABEL).map(([k, label]) => (
-          <span key={k} className="inline-flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded-full" style={{ background: STATUS_COLOR[k] }} />
-            {label}
-          </span>
-        ))}
       </div>
     </div>
   )

@@ -210,6 +210,40 @@ export async function matrixFromBase(
   return out
 }
 
+export interface OptimizedRoute {
+  order: number[] // indeksy `stops` w optymalnej kolejności odwiedzania (bez bazy)
+  geometry: { type: 'LineString'; coordinates: [number, number][] }
+  distance: number // metry (cała pętla)
+  duration: number // sekundy
+}
+/* Optymalna trasa od bazy przez wybrane punkty i z powrotem (Mapbox Optimization
+ * API = heurystyka TSP). Limit 12 współrzędnych = baza + max 11 przystanków. */
+export async function optimizeRoute(
+  base: { lat: number; lng: number },
+  stops: { lat: number; lng: number }[],
+): Promise<OptimizedRoute | null> {
+  if (!MAPBOX_TOKEN || stops.length === 0) return null
+  const coords = [base, ...stops].map((p) => `${p.lng},${p.lat}`).join(';')
+  const url =
+    `https://api.mapbox.com/optimized-trips/v1/mapbox/driving/${coords}` +
+    `?source=first&roundtrip=true&geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Optymalizacja trasy nieudana (${res.status})`)
+  const data = (await res.json()) as {
+    code?: string
+    trips?: { geometry: { type: 'LineString'; coordinates: [number, number][] }; distance: number; duration: number }[]
+    waypoints?: { waypoint_index: number }[]
+  }
+  const trip = data.trips?.[0]
+  if (data.code !== 'Ok' || !trip || !data.waypoints) return null
+  // waypoints[0] = baza; waypoints[k] (k≥1) odpowiada stops[k-1]; sortuj po kolejności.
+  const order = stops
+    .map((_, i) => ({ i, wi: data.waypoints![i + 1].waypoint_index }))
+    .sort((a, b) => a.wi - b.wi)
+    .map((o) => o.i)
+  return { order, geometry: trip.geometry, distance: trip.distance, duration: trip.duration }
+}
+
 /* ── Admin: lista kont + zmiana pól wrażliwych przez serwerowe RPC (B2.3) ── */
 export async function listAllUsers(): Promise<UserFull[]> {
   return repo.list<UserFull>('users')
