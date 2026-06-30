@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useProfile } from '../components/Layout'
 import { listTeamStats, listUsers, type UserStats } from '../lib/repo'
+import Avatar from '../components/Avatar'
 
 const MANAGER_PLUS = ['admin', 'dyrektor', 'manager']
 const ROLE_LABEL: Record<string, string> = {
@@ -74,6 +75,7 @@ export default function Ranking() {
               <div className="grid w-9 shrink-0 place-items-center text-lg font-bold">
                 {top ? <span className="text-2xl">{MEDAL[i]}</span> : <span className="font-display text-steel">{i + 1}</span>}
               </div>
+              <Avatar name={r.name} />
               <div className="min-w-0 flex-1">
                 <div className="font-medium text-cream">{r.name}</div>
                 <div className="text-xs text-steel">{ROLE_LABEL[r.role] ?? r.role}</div>
