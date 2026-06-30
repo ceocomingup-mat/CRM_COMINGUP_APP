@@ -4,6 +4,7 @@ import { restoreSession, supabase, type Profile } from './lib/supabase'
 import Login from './pages/Login'
 import Layout from './components/Layout'
 import Pulpit from './pages/Pulpit'
+import ResetPassword from './pages/ResetPassword'
 import GoalGate from './components/GoalGate'
 
 // Strony ładowane leniwie → osobne chunki pobierane dopiero przy wejściu na trasę,
@@ -35,17 +36,18 @@ const Mapa = lazy(() => import('./pages/Mapa'))
 function App() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [booting, setBooting] = useState(true)
+  const [recovery, setRecovery] = useState(false)
 
   useEffect(() => {
     restoreSession()
       .then((p) => setProfile(p))
       .finally(() => setBooting(false))
 
-    // Reaguj na wygaśnięcie/odebranie sesji (np. nieudany refresh tokenu lub
-    // wylogowanie w innej karcie) → wróć do ekranu logowania zamiast wisieć na
-    // błędach 401. Logowanie obsługujemy w formularzu, więc reagujemy tylko na wyjście.
+    // PASSWORD_RECOVERY: użytkownik wszedł z linku resetu → pokaż ekran nowego
+    // hasła niezależnie od profilu. SIGNED_OUT: wygasła/odebrana sesja → logowanie.
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') setProfile(null)
+      if (event === 'PASSWORD_RECOVERY') setRecovery(true)
+      else if (event === 'SIGNED_OUT') setProfile(null)
     })
     return () => sub.subscription.unsubscribe()
   }, [])
@@ -55,6 +57,9 @@ function App() {
       <div className="min-h-svh grid place-items-center text-steel">Ładowanie…</div>
     )
   }
+
+  if (recovery)
+    return <ResetPassword onDone={() => { setRecovery(false); setProfile(null) }} />
 
   if (!profile) return <Login onLoggedIn={setProfile} />
 

@@ -70,6 +70,24 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut()
 }
 
+/* Wyślij e-mail z linkiem do resetu hasła. Link wraca na origin aplikacji, gdzie
+ * supabase-js wykrywa token i zgłasza zdarzenie PASSWORD_RECOVERY (App pokazuje
+ * ekran ustawienia nowego hasła). Wymaga skonfigurowanego SMTP + Redirect URL. */
+export async function requestPasswordReset(email: string): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+    redirectTo: window.location.origin,
+  })
+  if (error) return { ok: false, error: translateError(error.message) }
+  return { ok: true }
+}
+
+/* Ustaw nowe hasło dla aktualnej (recovery) sesji. */
+export async function updatePassword(newPassword: string): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) return { ok: false, error: translateError(error.message) }
+  return { ok: true }
+}
+
 /* Odtwórz sesję przy starcie aplikacji (np. po odświeżeniu strony). */
 export async function restoreSession(): Promise<Profile | null> {
   const { data } = await supabase.auth.getSession()
