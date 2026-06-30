@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { signOut, type Profile } from '../lib/supabase'
 import ErrorBoundary from './ErrorBoundary'
+import TopBar from './TopBar'
 
 export interface LayoutContext {
   profile: Profile
@@ -206,13 +207,16 @@ export default function Layout({
         </div>
       </aside>
 
-      <main className="px-4 pb-10 pt-[4.5rem] md:ml-60 md:px-8 md:py-8">
-        <ErrorBoundary resetKey={location.pathname}>
-          <Suspense fallback={<p className="text-steel">Wczytywanie…</p>}>
-            <Outlet context={{ profile } satisfies LayoutContext} />
-          </Suspense>
-        </ErrorBoundary>
-      </main>
+      <div className="md:ml-60">
+        <TopBar profile={profile} onLogout={logout} />
+        <main className="px-4 pb-10 pt-[4.5rem] md:px-8 md:pb-10 md:pt-6">
+          <ErrorBoundary resetKey={location.pathname}>
+            <Suspense fallback={<p className="text-steel">Wczytywanie…</p>}>
+              <Outlet context={{ profile } satisfies LayoutContext} />
+            </Suspense>
+          </ErrorBoundary>
+        </main>
+      </div>
     </div>
   )
 }

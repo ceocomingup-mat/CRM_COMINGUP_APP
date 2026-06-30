@@ -524,6 +524,25 @@ export async function listContests(): Promise<Contest[]> {
   }))
 }
 
+/* ── Powiadomienia (notifications) — RLS: własne ── */
+export interface AppNotification {
+  id: string
+  type: string | null
+  title: string | null
+  body: string | null
+  read: boolean
+  linkEntity: string | null
+  linkId: string | null
+  createdAt: string
+}
+export async function listNotifications(): Promise<AppNotification[]> {
+  const rows = await repo.list<AppNotification>('notifications')
+  return rows.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+}
+export async function markNotificationRead(id: string): Promise<void> {
+  await repo.update('notifications', id, { read: true })
+}
+
 /* ── Aktualności (news) ── */
 export interface News {
   id: string
