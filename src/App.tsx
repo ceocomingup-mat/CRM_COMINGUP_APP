@@ -1,6 +1,6 @@
 import { lazy, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { restoreSession, type Profile } from './lib/supabase'
+import { restoreSession, supabase, type Profile } from './lib/supabase'
 import Login from './pages/Login'
 import Layout from './components/Layout'
 import Pulpit from './pages/Pulpit'
@@ -40,6 +40,14 @@ function App() {
     restoreSession()
       .then((p) => setProfile(p))
       .finally(() => setBooting(false))
+
+    // Reaguj na wygaśnięcie/odebranie sesji (np. nieudany refresh tokenu lub
+    // wylogowanie w innej karcie) → wróć do ekranu logowania zamiast wisieć na
+    // błędach 401. Logowanie obsługujemy w formularzu, więc reagujemy tylko na wyjście.
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') setProfile(null)
+    })
+    return () => sub.subscription.unsubscribe()
   }, [])
 
   if (booting) {

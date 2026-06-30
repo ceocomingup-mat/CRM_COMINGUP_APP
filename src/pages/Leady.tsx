@@ -58,8 +58,8 @@ export default function Leady() {
       )}
 
       {leads && leads.length > 0 && (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-card shadow-sm">
-          <table className="w-full text-left text-sm">
+        <div className="mt-6 overflow-x-auto rounded-2xl border border-line bg-card shadow-sm">
+          <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-steel">
               <tr>
                 <th className="px-4 py-3 font-medium">Lead</th>

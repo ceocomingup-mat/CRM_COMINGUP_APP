@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useOutletContext } from 'react-router-dom'
 import { signOut, type Profile } from '../lib/supabase'
+import ErrorBoundary from './ErrorBoundary'
 
 export interface LayoutContext {
   profile: Profile
@@ -143,9 +144,11 @@ export default function Layout({
       </aside>
 
       <main className="px-4 pb-10 pt-[4.5rem] md:ml-60 md:px-8 md:py-8">
-        <Suspense fallback={<p className="text-steel">Wczytywanie…</p>}>
-          <Outlet context={{ profile } satisfies LayoutContext} />
-        </Suspense>
+        <ErrorBoundary resetKey={location.pathname}>
+          <Suspense fallback={<p className="text-steel">Wczytywanie…</p>}>
+            <Outlet context={{ profile } satisfies LayoutContext} />
+          </Suspense>
+        </ErrorBoundary>
       </main>
     </div>
   )
