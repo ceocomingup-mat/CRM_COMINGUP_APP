@@ -1,33 +1,36 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { restoreSession, type Profile } from './lib/supabase'
 import Login from './pages/Login'
 import Layout from './components/Layout'
 import Pulpit from './pages/Pulpit'
-import Klienci from './pages/Klienci'
-import KlientKarta from './pages/KlientKarta'
-import Leady from './pages/Leady'
-import LeadKarta from './pages/LeadKarta'
-import Umowy from './pages/Umowy'
-import Zadania from './pages/Zadania'
-import Aktualnosci from './pages/Aktualnosci'
-import Ranking from './pages/Ranking'
-import Profil from './pages/Profil'
-import Statystyki from './pages/Statystyki'
-import Kalendarz from './pages/Kalendarz'
-import Admin from './pages/Admin'
-import Ustawienia from './pages/Ustawienia'
-import Zawody from './pages/Zawody'
-import Kalkulator from './pages/Kalkulator'
-import Zespol from './pages/Zespol'
-import Raporty from './pages/Raporty'
-import Aktywnosc from './pages/Aktywnosc'
-import Szkolenia from './pages/Szkolenia'
-import Materialy from './pages/Materialy'
-import Wsparcie from './pages/Wsparcie'
-// Mapa ciągnie ciężki mapbox-gl → lazy, ładowany dopiero przy wejściu na /mapa.
-const Mapa = lazy(() => import('./pages/Mapa'))
 import GoalGate from './components/GoalGate'
+
+// Strony ładowane leniwie → osobne chunki pobierane dopiero przy wejściu na trasę,
+// dzięki czemu główny bundle (pierwsze wejście) jest mały. Pulpit zostaje eager
+// jako pierwszy ekran po logowaniu; Suspense dla reszty jest w Layout (Outlet).
+const Klienci = lazy(() => import('./pages/Klienci'))
+const KlientKarta = lazy(() => import('./pages/KlientKarta'))
+const Leady = lazy(() => import('./pages/Leady'))
+const LeadKarta = lazy(() => import('./pages/LeadKarta'))
+const Umowy = lazy(() => import('./pages/Umowy'))
+const Zadania = lazy(() => import('./pages/Zadania'))
+const Aktualnosci = lazy(() => import('./pages/Aktualnosci'))
+const Ranking = lazy(() => import('./pages/Ranking'))
+const Profil = lazy(() => import('./pages/Profil'))
+const Statystyki = lazy(() => import('./pages/Statystyki'))
+const Kalendarz = lazy(() => import('./pages/Kalendarz'))
+const Admin = lazy(() => import('./pages/Admin'))
+const Ustawienia = lazy(() => import('./pages/Ustawienia'))
+const Zawody = lazy(() => import('./pages/Zawody'))
+const Kalkulator = lazy(() => import('./pages/Kalkulator'))
+const Zespol = lazy(() => import('./pages/Zespol'))
+const Raporty = lazy(() => import('./pages/Raporty'))
+const Aktywnosc = lazy(() => import('./pages/Aktywnosc'))
+const Szkolenia = lazy(() => import('./pages/Szkolenia'))
+const Materialy = lazy(() => import('./pages/Materialy'))
+const Wsparcie = lazy(() => import('./pages/Wsparcie'))
+const Mapa = lazy(() => import('./pages/Mapa'))
 
 function App() {
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -73,14 +76,7 @@ function App() {
           <Route path="szkolenia" element={<Szkolenia />} />
           <Route path="materialy" element={<Materialy />} />
           <Route path="wsparcie" element={<Wsparcie />} />
-          <Route
-            path="mapa"
-            element={
-              <Suspense fallback={<p className="text-steel">Wczytywanie mapy…</p>}>
-                <Mapa />
-              </Suspense>
-            }
-          />
+          <Route path="mapa" element={<Mapa />} />
           <Route path="zespol" element={<Zespol />} />
           <Route path="raporty" element={<Raporty />} />
           <Route path="*" element={<Navigate to="/" replace />} />
