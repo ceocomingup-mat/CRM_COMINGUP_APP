@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { X } from 'lucide-react'
 import { visibleCount } from '../lib/supabase'
 import {
   listTasks,
@@ -31,6 +32,20 @@ function startOfToday(): number {
   return d.getTime()
 }
 
+// Policz zadania wg terminu (zaległe / dziś / wkrótce).
+function taskCounts(tasks: Task[]): { overdue: number; today: number; upcoming: number } {
+  let overdue = 0, today = 0, upcoming = 0
+  for (const t of tasks) {
+    if (!t.dueDate) { upcoming++; continue }
+    const d = new Date(t.dueDate); d.setHours(0, 0, 0, 0)
+    const diff = d.getTime() - startOfToday()
+    if (diff < 0) overdue++
+    else if (diff === 0) today++
+    else upcoming++
+  }
+  return { overdue, today, upcoming }
+}
+
 function dueInfo(due: string | null): { label: string; cls: string } {
   if (!due) return { label: 'bez terminu', cls: 'text-steel' }
   const d = new Date(due)
@@ -52,6 +67,7 @@ export default function Pulpit() {
   const [clientNames, setClientNames] = useState<Record<string, string>>({})
   const [myReport, setMyReport] = useState<MonthReportRow | null>(null)
   const [recruits, setRecruits] = useState<number>(0)
+  const [showBrief, setShowBrief] = useState(false)
 
   useEffect(() => {
     visibleCount('clients').then(setClients)
@@ -73,10 +89,28 @@ export default function Pulpit() {
     })
   }, [profile.id])
 
+  // Poranny brief — pokaż raz dziennie po wczytaniu zadań.
+  useEffect(() => {
+    if (!tasks) return
+    const key = `cu-brief-${new Date().toISOString().slice(0, 10)}`
+    if (!localStorage.getItem(key)) {
+      setShowBrief(true)
+      localStorage.setItem(key, '1')
+    }
+  }, [tasks])
+
   const fullName = `${profile.firstName} ${profile.lastName}`.trim() || profile.email
 
   return (
     <div className="max-w-3xl">
+      {showBrief && tasks && (
+        <MorningBrief
+          name={fullName}
+          ratio={myReport ? overallPace(myReport) : null}
+          tasks={tasks}
+          onClose={() => setShowBrief(false)}
+        />
+      )}
       <div className="kicker">Pulpit</div>
       <h1 className="text-2xl font-semibold text-cream">Cześć, {fullName} 👋</h1>
       <p className="mt-1 text-steel">Pulpit — przegląd Twoich danych.</p>
@@ -112,7 +146,26 @@ export default function Pulpit() {
         </>
       )}
 
-      <h2 className="mt-10 mb-3 text-lg font-semibold text-cream">Co dziś zrobić</h2>
+      <div className="mt-10 mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold text-cream">Co dziś zrobić</h2>
+        {tasks && tasks.length > 0 && (() => {
+          const c = taskCounts(tasks)
+          const pill = (n: number, label: string, color: string) =>
+            n > 0 ? (
+              <span className="inline-flex items-center gap-1.5 text-xs text-steel">
+                <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1 text-[11px] font-bold ${color}`}>{n}</span>
+                {label}
+              </span>
+            ) : null
+          return (
+            <div className="flex items-center gap-3">
+              {pill(c.overdue, 'zaległe', 'bg-bad/20 text-bad')}
+              {pill(c.today, 'na dziś', 'bg-warn/20 text-warn')}
+              {pill(c.upcoming, 'wkrótce', 'bg-surface text-muted')}
+            </div>
+          )
+        })()}
+      </div>
       {!tasks && <p className="text-steel">Wczytywanie…</p>}
       {tasks && tasks.length === 0 && (
         <p className="rounded-2xl border border-line bg-card px-5 py-4 text-steel shadow-sm">
@@ -164,6 +217,67 @@ export default function Pulpit() {
         Liczby i zadania zależą od Twojej roli — ochrona danych (RLS) pilnuje, że
         doradca widzi mniej niż dyrektor, a dyrektor mniej niż admin.
       </p>
+    </div>
+  )
+}
+
+// Poranny brief — modal powitalny (raz dziennie), jak w prototypie.
+function MorningBrief({
+  name, ratio, tasks, onClose,
+}: { name: string; ratio: number | null; tasks: Task[]; onClose: () => void }) {
+  const c = taskCounts(tasks)
+  const b = paceBadge(ratio)
+  const dateStr = new Date().toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' })
+  const top = tasks.slice(0, 3)
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="kicker">Poranny brief</div>
+            <h2 className="font-display text-xl font-semibold text-cream">Dzień dobry, {name.split(' ')[0]}!</h2>
+            <div className="mt-0.5 text-sm capitalize text-steel">{dateStr}</div>
+          </div>
+          <button onClick={onClose} aria-label="Zamknij" className="text-steel hover:text-cream">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${b.cls}`}>{b.label}</span>
+          {ratio != null && (
+            <span className="text-sm text-steel">
+              {ratio >= 1 ? '+' : ''}{Math.round((ratio - 1) * 100)}% względem planu
+            </span>
+          )}
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          <BriefStat n={c.overdue} label="Zaległe" tone="bad" />
+          <BriefStat n={c.today} label="Na dziś" tone="warn" />
+          <BriefStat n={c.upcoming} label="Wkrótce" tone="steel" />
+        </div>
+        {top.length > 0 && (
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wide text-steel">Na start</div>
+            <ul className="mt-2 space-y-1.5">
+              {top.map((t) => (
+                <li key={t.id} className="truncate text-sm text-muted">• {t.title}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <button onClick={onClose} className="mt-6 w-full rounded-lg bg-brass px-4 py-2.5 font-medium text-ink transition hover:bg-brass2">
+          Zaczynamy!
+        </button>
+      </div>
+    </div>
+  )
+}
+function BriefStat({ n, label, tone }: { n: number; label: string; tone: 'bad' | 'warn' | 'steel' }) {
+  const color = tone === 'bad' ? 'text-bad' : tone === 'warn' ? 'text-warn' : 'text-steel'
+  return (
+    <div className="rounded-xl border border-line bg-bg p-3 text-center">
+      <div className={`font-display text-2xl font-bold ${color}`}>{n}</div>
+      <div className="mt-0.5 text-[11px] uppercase tracking-wide text-steel">{label}</div>
     </div>
   )
 }
@@ -259,10 +373,10 @@ function PaceCard({
 function StatCard({ label, value }: { label: string; value: number | null }) {
   return (
     <div className="rounded-2xl border border-line bg-card p-5 shadow-sm">
-      <div className="text-3xl font-bold text-cream">
+      <div className="font-display text-4xl font-bold tabular-nums text-cream">
         {value === null ? '…' : value < 0 ? '—' : value}
       </div>
-      <div className="mt-1 text-sm text-steel">{label}</div>
+      <div className="mt-1 text-[11px] font-medium uppercase tracking-wider text-steel">{label}</div>
     </div>
   )
 }
