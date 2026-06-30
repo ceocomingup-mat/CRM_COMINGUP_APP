@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 
-// Konta demo (hasło demo123). Logika RLS/ról weryfikowana na żywej bazie.
+// Hasło kont testowych z env (E2E_PASS) — hasła demo zrotowane na produkcji.
+// Logika RLS/ról weryfikowana na żywej bazie. Uruchom: E2E_PASS='...' npm run e2e
 const PASS = process.env.E2E_PASS || 'demo123'
 
 async function login(page: Page, email: string) {
