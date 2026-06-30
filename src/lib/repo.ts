@@ -123,6 +123,13 @@ export async function updateProfile(
   return repo.update<UserFull>('users', id, patch)
 }
 
+/* Zmiana własnego hasła — przez GoTrue (auth.updateUser). Wymaga aktywnej sesji;
+ * Supabase wymusza min. długość po stronie serwera. Nie dotyka tabeli users. */
+export async function changePassword(newPassword: string): Promise<void> {
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) throw new Error(error.message)
+}
+
 /* ── Admin: lista kont + zmiana pól wrażliwych przez serwerowe RPC (B2.3) ── */
 export async function listAllUsers(): Promise<UserFull[]> {
   return repo.list<UserFull>('users')
