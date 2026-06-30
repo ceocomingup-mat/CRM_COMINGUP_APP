@@ -15,6 +15,7 @@ import Ranking from './pages/Ranking'
 import Profil from './pages/Profil'
 import Statystyki from './pages/Statystyki'
 import Kalendarz from './pages/Kalendarz'
+import Admin from './pages/Admin'
 import Kalkulator from './pages/Kalkulator'
 import Zespol from './pages/Zespol'
 import Raporty from './pages/Raporty'
@@ -64,6 +65,7 @@ function App() {
           <Route path="profil" element={<Profil />} />
           <Route path="statystyki" element={<Statystyki />} />
           <Route path="kalendarz" element={<Kalendarz />} />
+          <Route path="admin" element={<Admin />} />
           <Route path="szkolenia" element={<Szkolenia />} />
           <Route path="materialy" element={<Materialy />} />
           <Route path="wsparcie" element={<Wsparcie />} />

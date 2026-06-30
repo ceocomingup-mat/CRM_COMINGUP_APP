@@ -123,6 +123,21 @@ export async function updateProfile(
   return repo.update<UserFull>('users', id, patch)
 }
 
+/* ── Admin: lista kont + zmiana pól wrażliwych przez serwerowe RPC (B2.3) ── */
+export async function listAllUsers(): Promise<UserFull[]> {
+  return repo.list<UserFull>('users')
+}
+/* Zmiana roli/rangi/% — RPC `admin_update_user` (wrapper → app.admin_update_user_profile,
+ * SECURITY DEFINER z gardą app.require_admin()). Nie-admin dostaje wyjątek z bazy. */
+export async function adminUpdateUser(
+  targetId: string,
+  patch: { role?: string; rank?: string; rank_pct?: number },
+): Promise<UserFull> {
+  const { data, error } = await supabase.rpc('admin_update_user', { p_target: targetId, p: patch })
+  if (error) throw new Error(error.message)
+  return rawRepo.fromDb<UserFull>('users', data)
+}
+
 /* Przesuń klienta na inny etap przez SERWEROWE RPC `advance_stage` (B4.7):
  * atomowo zapisuje `clients.current_stage` + `client_stage_history` (RLS = server-only)
  * + audyt do `events`, z gardą roli/własności po stronie bazy (admin lub właściciel).

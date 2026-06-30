@@ -39,6 +39,7 @@ const NAV = [
   { to: '/wsparcie', label: 'Wsparcie', end: false },
   { to: '/zespol', label: 'Zespół', end: false, roles: MANAGER_PLUS },
   { to: '/raporty', label: 'Raporty', end: false, roles: MANAGER_PLUS },
+  { to: '/admin', label: 'Administracja', end: false, roles: ['admin'] },
 ]
 
 function Logo() {
