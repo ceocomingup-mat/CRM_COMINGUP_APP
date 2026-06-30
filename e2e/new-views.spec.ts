@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 
 // Pokrycie E2E dla widoków dodanych po pierwszej rundzie (Admin, Zawody,
 // Ustawienia, Mapa). Read-only — nic nie zapisuje na żywej bazie.
-const PASS = 'demo123'
+const PASS = process.env.E2E_PASS || 'demo123'
 
 async function login(page: Page, email: string) {
   await page.goto('/')

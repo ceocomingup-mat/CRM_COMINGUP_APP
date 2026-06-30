@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 
 // Konta demo (hasło demo123). Logika RLS/ról weryfikowana na żywej bazie.
-const PASS = 'demo123'
+const PASS = process.env.E2E_PASS || 'demo123'
 
 async function login(page: Page, email: string) {
   await page.goto('/')
