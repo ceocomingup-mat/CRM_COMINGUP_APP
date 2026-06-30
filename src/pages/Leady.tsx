@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listLeads, listUsers, type Lead } from '../lib/repo'
+import Avatar from '../components/Avatar'
 
 const STATUS_LABEL: Record<string, string> = {
   free: 'Wolny',
@@ -77,8 +78,13 @@ export default function Leady() {
                   onClick={() => navigate(`/leady/${l.id}`)}
                   className="cursor-pointer hover:bg-surface"
                 >
-                  <td className="px-4 py-3 font-medium text-cream">
-                    {l.firstName} {l.lastName}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar name={`${l.firstName} ${l.lastName}`} />
+                      <span className="font-medium text-cream">
+                        {l.firstName} {l.lastName}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-muted">
                     {[l.city, l.province].filter(Boolean).join(', ') || '—'}

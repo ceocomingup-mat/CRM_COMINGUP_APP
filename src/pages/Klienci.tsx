@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { listClients, listUsers, type Client } from '../lib/repo'
+import { listClients, listUsers, listStages, type Client, type Stage } from '../lib/repo'
+import Avatar from '../components/Avatar'
 
 const STATUS_LABEL: Record<string, string> = {
   active: 'Aktywny',
@@ -25,14 +26,18 @@ export default function Klienci() {
   const navigate = useNavigate()
   const [clients, setClients] = useState<Client[] | null>(null)
   const [names, setNames] = useState<Record<string, string>>({})
+  const [stageNames, setStageNames] = useState<Record<number, string>>({})
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    Promise.all([listClients(), listUsers()])
-      .then(([cs, us]) => {
+    Promise.all([listClients(), listUsers(), listStages()])
+      .then(([cs, us, st]) => {
         const map: Record<string, string> = {}
         for (const u of us) map[u.id] = `${u.firstName} ${u.lastName}`.trim()
         setNames(map)
+        const sm: Record<number, string> = {}
+        for (const s of st as Stage[]) sm[s.stageOrder] = s.name
+        setStageNames(sm)
         setClients(cs.sort((a, b) => a.lastName.localeCompare(b.lastName, 'pl')))
       })
       .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)))
@@ -80,15 +85,21 @@ export default function Klienci() {
                   onClick={() => navigate(`/klienci/${c.id}`)}
                   className="cursor-pointer hover:bg-surface"
                 >
-                  <td className="px-4 py-3 font-medium text-cream">
-                    {c.firstName} {c.lastName}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar name={`${c.firstName} ${c.lastName}`} />
+                      <span className="font-medium text-cream">
+                        {c.firstName} {c.lastName}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-muted">
                     {[c.city, c.province].filter(Boolean).join(', ') || '—'}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="inline-block rounded-md bg-surface px-2 py-0.5 text-xs font-medium text-muted">
+                    <span className="inline-block whitespace-nowrap rounded-md bg-surface px-2 py-0.5 text-xs font-medium text-muted">
                       E{c.currentStage}
+                      {stageNames[c.currentStage] ? ` · ${stageNames[c.currentStage]}` : ''}
                     </span>
                   </td>
                   <td className="px-4 py-3">

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useProfile } from '../components/Layout'
 import { listTeamPipeline, subscribeTeam, type TeamRow } from '../lib/repo'
+import Avatar from '../components/Avatar'
 
 const ROLE_LABEL: Record<string, string> = {
   admin: 'Administrator',
@@ -109,13 +110,18 @@ export default function Zespol() {
             <tbody className="divide-y divide-line">
               {rows.map((r) => (
                 <tr key={r.userId} className="hover:bg-surface">
-                  <td className="px-4 py-3 font-medium text-cream">
-                    {r.firstName} {r.lastName}
-                    {r.userId === profile.id && (
-                      <span className="ml-2 rounded-full bg-brass/15 px-2 py-0.5 text-xs text-brass">
-                        Ty
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar name={`${r.firstName} ${r.lastName}`} />
+                      <span className="font-medium text-cream">
+                        {r.firstName} {r.lastName}
                       </span>
-                    )}
+                      {r.userId === profile.id && (
+                        <span className="rounded-full bg-brass/15 px-2 py-0.5 text-xs text-brass">
+                          Ty
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-muted">{ROLE_LABEL[r.role] ?? r.role}</td>
                   <td className="px-4 py-3 text-right tabular-nums text-cream">
