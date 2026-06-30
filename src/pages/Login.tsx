@@ -71,9 +71,13 @@ export default function Login({ onLoggedIn }: { onLoggedIn: (p: Profile) => void
           </button>
         </form>
 
-        <p className="mt-4 text-center text-xs text-steel">
-          Konta demo (hasło <code>demo123</code>): admin@ · marek@ · maria@comingup.pl
-        </p>
+        {/* Podpowiedź kont demo TYLKO w trybie deweloperskim — nigdy w produkcyjnym
+            buildzie (publiczny URL nie może zdradzać danych logowania). */}
+        {import.meta.env.DEV && (
+          <p className="mt-4 text-center text-xs text-steel">
+            Konta demo (hasło <code>demo123</code>): admin@ · marek@ · maria@comingup.pl
+          </p>
+        )}
       </div>
     </div>
   )
