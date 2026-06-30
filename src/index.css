@@ -1,7 +1,9 @@
-@import "tailwindcss";
-
-/* Fonty prototypu */
+/* Fonty prototypu — MUSZĄ być przed @import "tailwindcss" (Tailwind v4 rozwija
+   tailwindcss w wiele reguł; @import url() po nich = nieprawidłowy CSS i font
+   bywa pomijany → fallback systemowy). Kolejność = realne ładowanie fontów. */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
 
 /* ── Design system z prototypu (ciemny + mosiądz) jako tokeny Tailwind v4 ──── */
 @theme {
