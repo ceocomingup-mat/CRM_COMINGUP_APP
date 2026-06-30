@@ -32,6 +32,8 @@ export interface Client {
   contractDate: string | null
   status: string
   advisorId: string | null
+  lat: number | null
+  lng: number | null
 }
 
 export interface UserLite {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { restoreSession, type Profile } from './lib/supabase'
 import Login from './pages/Login'
@@ -14,6 +14,8 @@ import Aktywnosc from './pages/Aktywnosc'
 import Szkolenia from './pages/Szkolenia'
 import Materialy from './pages/Materialy'
 import Wsparcie from './pages/Wsparcie'
+// Mapa ciągnie ciężki mapbox-gl → lazy, ładowany dopiero przy wejściu na /mapa.
+const Mapa = lazy(() => import('./pages/Mapa'))
 import GoalGate from './components/GoalGate'
 
 function App() {
@@ -49,6 +51,14 @@ function App() {
           <Route path="szkolenia" element={<Szkolenia />} />
           <Route path="materialy" element={<Materialy />} />
           <Route path="wsparcie" element={<Wsparcie />} />
+          <Route
+            path="mapa"
+            element={
+              <Suspense fallback={<p className="text-slate-400">Wczytywanie mapy…</p>}>
+                <Mapa />
+              </Suspense>
+            }
+          />
           <Route path="zespol" element={<Zespol />} />
           <Route path="raporty" element={<Raporty />} />
           <Route path="*" element={<Navigate to="/" replace />} />
