@@ -10,6 +10,8 @@ import {
   type Stage,
   type StageHistory,
 } from '../lib/repo'
+import Avatar from '../components/Avatar'
+import { SOURCE_LABEL, PRODUCT_LABEL, MM_STATUS_LABEL, label } from '../lib/labels'
 
 const STATUS_LABEL: Record<string, string> = {
   active: 'Aktywny',
@@ -103,14 +105,18 @@ export default function KlientKarta() {
     <div className="max-w-3xl">
       <BackLink />
 
-      <div className="mt-3 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-cream">
-            {client.firstName} {client.lastName}
-          </h1>
-          <p className="mt-1 text-steel">
-            {[client.city, client.province].filter(Boolean).join(', ') || 'Brak lokalizacji'}
-          </p>
+      <div className="mt-3 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-4">
+          <Avatar name={`${client.firstName} ${client.lastName}`} size="lg" />
+          <div>
+            <div className="kicker">Klient</div>
+            <h1 className="text-2xl font-semibold text-cream">
+              {client.firstName} {client.lastName}
+            </h1>
+            <p className="mt-1 text-steel">
+              {[client.city, client.province].filter(Boolean).join(', ') || 'Brak lokalizacji'}
+            </p>
+          </div>
         </div>
         <span
           className={`rounded-full px-3 py-1 text-sm font-medium ${
@@ -126,12 +132,12 @@ export default function KlientKarta() {
         <Field label="Telefon" value={client.phone} />
         <Field label="E-mail" value={client.email} />
         <Field label="Adres" value={client.address} />
-        <Field label="Źródło" value={client.source} />
-        <Field label="Produkt" value={client.product} />
+        <Field label="Źródło" value={label(SOURCE_LABEL, client.source)} />
+        <Field label="Produkt" value={label(PRODUCT_LABEL, client.product)} />
         <Field label="Doradca" value={advisor} />
         <Field label="Masa Marży" value={fmtMM(client.mmNetto)} />
         <Field label="Data umowy" value={fmtDate(client.contractDate) || null} />
-        <Field label="Status MM" value={client.mmStatus} />
+        <Field label="Status MM" value={label(MM_STATUS_LABEL, client.mmStatus)} />
       </div>
 
       {/* Proces 11 etapów */}

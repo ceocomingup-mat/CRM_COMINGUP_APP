@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listLeads, listUsers, type Lead } from '../lib/repo'
 import Avatar from '../components/Avatar'
+import { SOURCE_LABEL, label } from '../lib/labels'
 
 const STATUS_LABEL: Record<string, string> = {
   free: 'Wolny',
@@ -89,7 +90,7 @@ export default function Leady() {
                   <td className="px-4 py-3 text-muted">
                     {[l.city, l.province].filter(Boolean).join(', ') || '—'}
                   </td>
-                  <td className="px-4 py-3 text-muted">{l.source || '—'}</td>
+                  <td className="px-4 py-3 text-muted">{label(SOURCE_LABEL, l.source) || '—'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-block badge rounded-full px-2 py-0.5 text-xs font-medium ${

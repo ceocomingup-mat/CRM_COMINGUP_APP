@@ -7,6 +7,7 @@ import {
   startProcess,
   type Lead,
 } from '../lib/repo'
+import { SOURCE_LABEL, label } from '../lib/labels'
 
 const STATUS_LABEL: Record<string, string> = {
   free: 'Wolny',
@@ -99,7 +100,7 @@ export default function LeadKarta() {
       <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-3 rounded-2xl border border-line bg-card p-5 text-sm shadow-sm sm:grid-cols-3">
         <Field label="Telefon" value={lead.phone} />
         <Field label="E-mail" value={lead.email} />
-        <Field label="Źródło" value={lead.source} />
+        <Field label="Źródło" value={label(SOURCE_LABEL, lead.source)} />
         <Field label="Doradca" value={advisor || (lead.status === 'free' ? 'Wolny (pula)' : null)} />
       </div>
 
