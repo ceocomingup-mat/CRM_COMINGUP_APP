@@ -18,10 +18,10 @@ const STATUS_LABEL: Record<string, string> = {
   paused: 'Wstrzymany',
 }
 const STATUS_STYLE: Record<string, string> = {
-  active: 'bg-emerald-50 text-emerald-700',
-  won: 'bg-violet-50 text-violet-700',
-  lost: 'bg-red-50 text-red-700',
-  paused: 'bg-amber-50 text-amber-700',
+  active: 'bg-go/15 text-go',
+  won: 'bg-brass/10 text-brass',
+  lost: 'bg-bad/15 text-bad',
+  paused: 'bg-warn/15 text-warn',
 }
 
 function fmtMM(v: number | null): string {
@@ -61,10 +61,10 @@ export default function KlientKarta() {
       .finally(() => setLoading(false))
   }, [id])
 
-  if (loading) return <p className="text-slate-400">Wczytywanie…</p>
+  if (loading) return <p className="text-steel">Wczytywanie…</p>
   if (error)
     return (
-      <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p className="rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
         Błąd: {error}
       </p>
     )
@@ -72,7 +72,7 @@ export default function KlientKarta() {
     return (
       <div>
         <BackLink />
-        <p className="mt-4 text-slate-400">Nie znaleziono klienta.</p>
+        <p className="mt-4 text-steel">Nie znaleziono klienta.</p>
       </div>
     )
 
@@ -105,16 +105,16 @@ export default function KlientKarta() {
 
       <div className="mt-3 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-2xl font-semibold text-cream">
             {client.firstName} {client.lastName}
           </h1>
-          <p className="mt-1 text-slate-500">
+          <p className="mt-1 text-steel">
             {[client.city, client.province].filter(Boolean).join(', ') || 'Brak lokalizacji'}
           </p>
         </div>
         <span
           className={`rounded-full px-3 py-1 text-sm font-medium ${
-            STATUS_STYLE[client.status] ?? 'bg-slate-100 text-slate-700'
+            STATUS_STYLE[client.status] ?? 'bg-surface text-muted'
           }`}
         >
           {STATUS_LABEL[client.status] ?? client.status}
@@ -122,7 +122,7 @@ export default function KlientKarta() {
       </div>
 
       {/* Dane klienta */}
-      <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-3 rounded-2xl border border-slate-200 bg-white p-5 text-sm shadow-sm sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-3 rounded-2xl border border-line bg-card p-5 text-sm shadow-sm sm:grid-cols-3">
         <Field label="Telefon" value={client.phone} />
         <Field label="E-mail" value={client.email} />
         <Field label="Adres" value={client.address} />
@@ -136,7 +136,7 @@ export default function KlientKarta() {
 
       {/* Proces 11 etapów */}
       <div className="mt-8 mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-slate-900">
+        <h2 className="text-lg font-semibold text-cream">
           Proces · etap {client.currentStage} z {maxStage}
         </h2>
         {canAct && (
@@ -144,14 +144,14 @@ export default function KlientKarta() {
             <button
               onClick={() => move(-1)}
               disabled={saving || client.currentStage <= 1}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100 disabled:opacity-40"
+              className="rounded-lg border border-line2 px-3 py-1.5 text-sm text-muted transition hover:bg-surface disabled:opacity-40"
             >
               ← Cofnij
             </button>
             <button
               onClick={() => move(1)}
               disabled={saving || client.currentStage >= maxStage}
-              className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-violet-700 disabled:opacity-40"
+              className="rounded-lg bg-brass px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-brass2 disabled:opacity-40"
             >
               {saving ? 'Zapisywanie…' : 'Dalej →'}
             </button>
@@ -159,7 +159,7 @@ export default function KlientKarta() {
         )}
       </div>
       {actionError && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mb-4 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
           Nie udało się zmienić etapu: {actionError}
         </p>
       )}
@@ -176,40 +176,40 @@ export default function KlientKarta() {
                 <div
                   className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-semibold ${
                     isLost
-                      ? 'bg-red-100 text-red-700'
+                      ? 'bg-bad/20 text-bad'
                       : isDone
-                        ? 'bg-emerald-500 text-white'
+                        ? 'bg-go text-ink'
                         : isCurrent
-                          ? 'bg-violet-600 text-white'
-                          : 'bg-slate-100 text-slate-400'
+                          ? 'bg-brass text-ink'
+                          : 'bg-surface text-steel'
                   }`}
                 >
                   {isDone ? '✓' : n}
                 </div>
                 {n < stages.length && (
                   <div
-                    className={`w-0.5 flex-1 ${isDone ? 'bg-emerald-300' : 'bg-slate-200'}`}
+                    className={`w-0.5 flex-1 ${isDone ? 'bg-go/40' : 'bg-cardhi'}`}
                   />
                 )}
               </div>
               <div className={`pb-4 ${isCurrent ? '' : ''}`}>
                 <div
                   className={`font-medium ${
-                    isCurrent ? 'text-violet-700' : isDone ? 'text-slate-900' : 'text-slate-400'
+                    isCurrent ? 'text-brass' : isDone ? 'text-cream' : 'text-steel'
                   }`}
                 >
                   {s.name}
                   {isCurrent && (
-                    <span className="ml-2 rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700">
+                    <span className="ml-2 rounded-full bg-brass/15 px-2 py-0.5 text-xs text-brass">
                       {isLost ? 'utracony tutaj' : 'tutaj'}
                     </span>
                   )}
                 </div>
                 {s.description && (
-                  <div className="text-sm text-slate-500">{s.description}</div>
+                  <div className="text-sm text-steel">{s.description}</div>
                 )}
                 {h && (h.enteredAt || h.completedAt) && (
-                  <div className="mt-0.5 text-xs text-slate-400">
+                  <div className="mt-0.5 text-xs text-steel">
                     {fmtDate(h.enteredAt) && `wejście ${fmtDate(h.enteredAt)}`}
                     {fmtDate(h.completedAt) && ` · zakończenie ${fmtDate(h.completedAt)}`}
                   </div>
@@ -225,7 +225,7 @@ export default function KlientKarta() {
 
 function BackLink() {
   return (
-    <Link to="/klienci" className="text-sm text-violet-600 hover:underline">
+    <Link to="/klienci" className="text-sm text-brass hover:underline">
       ← Wróć do listy klientów
     </Link>
   )
@@ -234,8 +234,8 @@ function BackLink() {
 function Field({ label, value }: { label: string; value: string | null }) {
   return (
     <div>
-      <div className="text-xs uppercase tracking-wide text-slate-400">{label}</div>
-      <div className="text-slate-800">{value || '—'}</div>
+      <div className="text-xs uppercase tracking-wide text-steel">{label}</div>
+      <div className="text-cream">{value || '—'}</div>
     </div>
   )
 }

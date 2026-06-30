@@ -10,10 +10,10 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  active: 'bg-emerald-50 text-emerald-700',
-  won: 'bg-violet-50 text-violet-700',
-  lost: 'bg-red-50 text-red-700',
-  paused: 'bg-amber-50 text-amber-700',
+  active: 'bg-go/15 text-go',
+  won: 'bg-brass/10 text-brass',
+  lost: 'bg-bad/15 text-bad',
+  paused: 'bg-warn/15 text-warn',
 }
 
 function fmtMM(v: number | null): string {
@@ -41,28 +41,28 @@ export default function Klienci() {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Klienci</h1>
+        <h1 className="text-2xl font-semibold text-cream">Klienci</h1>
         {clients && (
-          <span className="text-sm text-slate-500">{clients.length} widocznych</span>
+          <span className="text-sm text-steel">{clients.length} widocznych</span>
         )}
       </div>
 
       {error && (
-        <p className="mt-6 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-6 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
           Błąd wczytywania: {error}
         </p>
       )}
 
-      {!clients && !error && <p className="mt-6 text-slate-400">Wczytywanie…</p>}
+      {!clients && !error && <p className="mt-6 text-steel">Wczytywanie…</p>}
 
       {clients && clients.length === 0 && (
-        <p className="mt-6 text-slate-400">Brak klientów do wyświetlenia.</p>
+        <p className="mt-6 text-steel">Brak klientów do wyświetlenia.</p>
       )}
 
       {clients && clients.length > 0 && (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-card shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-steel">
               <tr>
                 <th className="px-4 py-3 font-medium">Klient</th>
                 <th className="px-4 py-3 font-medium">Lokalizacja</th>
@@ -72,37 +72,37 @@ export default function Klienci() {
                 <th className="px-4 py-3 font-medium">Doradca</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {clients.map((c) => (
                 <tr
                   key={c.id}
                   onClick={() => navigate(`/klienci/${c.id}`)}
-                  className="cursor-pointer hover:bg-slate-50"
+                  className="cursor-pointer hover:bg-surface"
                 >
-                  <td className="px-4 py-3 font-medium text-slate-900">
+                  <td className="px-4 py-3 font-medium text-cream">
                     {c.firstName} {c.lastName}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-muted">
                     {[c.city, c.province].filter(Boolean).join(', ') || '—'}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="inline-block rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                    <span className="inline-block rounded-md bg-surface px-2 py-0.5 text-xs font-medium text-muted">
                       E{c.currentStage}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                        STATUS_STYLE[c.status] ?? 'bg-slate-100 text-slate-700'
+                        STATUS_STYLE[c.status] ?? 'bg-surface text-muted'
                       }`}
                     >
                       {STATUS_LABEL[c.status] ?? c.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right tabular-nums text-slate-700">
+                  <td className="px-4 py-3 text-right tabular-nums text-muted">
                     {fmtMM(c.mmNetto)}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-muted">
                     {c.advisorId ? names[c.advisorId] ?? '—' : '—'}
                   </td>
                 </tr>

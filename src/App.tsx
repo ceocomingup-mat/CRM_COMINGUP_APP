@@ -30,7 +30,7 @@ function App() {
 
   if (booting) {
     return (
-      <div className="min-h-svh grid place-items-center text-slate-400">Ładowanie…</div>
+      <div className="min-h-svh grid place-items-center text-steel">Ładowanie…</div>
     )
   }
 
@@ -54,7 +54,7 @@ function App() {
           <Route
             path="mapa"
             element={
-              <Suspense fallback={<p className="text-slate-400">Wczytywanie mapy…</p>}>
+              <Suspense fallback={<p className="text-steel">Wczytywanie mapy…</p>}>
                 <Mapa />
               </Suspense>
             }

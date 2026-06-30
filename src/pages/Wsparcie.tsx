@@ -43,8 +43,8 @@ export default function Wsparcie() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-semibold text-slate-900">Wsparcie</h1>
-      <p className="mt-1 text-slate-500">Szukaj odpowiedzi i przydatnych kontaktów.</p>
+      <h1 className="text-2xl font-semibold text-cream">Wsparcie</h1>
+      <p className="mt-1 text-steel">Szukaj odpowiedzi i przydatnych kontaktów.</p>
 
       {/* ── Wyszukiwarka pomocy ── */}
       <div className="mt-6">
@@ -52,44 +52,44 @@ export default function Wsparcie() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Szukaj w bazie pomocy (np. dochód, audyt, ICD)…"
-          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+          className="w-full rounded-xl border border-line2 px-4 py-2.5 text-sm outline-none focus:border-brass focus:ring-2 focus:ring-brass/30"
         />
       </div>
 
       {error && (
-        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">Błąd: {error}</p>
+        <p className="mt-4 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">Błąd: {error}</p>
       )}
-      {!qa && !error && <p className="mt-6 text-slate-400">Wczytywanie…</p>}
+      {!qa && !error && <p className="mt-6 text-steel">Wczytywanie…</p>}
 
       {qa && (
         <>
-          <div className="mt-4 text-xs text-slate-400">
+          <div className="mt-4 text-xs text-steel">
             {query ? `${results.length} wyników dla „${query}”` : `${qa.length} pytań w bazie`}
           </div>
-          <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="mt-2 overflow-hidden rounded-2xl border border-line bg-card shadow-sm">
             {results.length === 0 && (
-              <p className="px-4 py-4 text-sm text-slate-400">Brak wyników. Spróbuj innej frazy.</p>
+              <p className="px-4 py-4 text-sm text-steel">Brak wyników. Spróbuj innej frazy.</p>
             )}
             {results.map((it) => {
               const isOpen = open === it.id
               return (
-                <div key={it.id} className="border-b border-slate-100 last:border-b-0">
+                <div key={it.id} className="border-b border-line last:border-b-0">
                   <button
                     onClick={() => setOpen(isOpen ? null : it.id)}
-                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-slate-800 hover:bg-slate-50"
+                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-cream hover:bg-surface"
                   >
                     <span>
                       {it.cat && (
-                        <span className="mr-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-500">
+                        <span className="mr-2 rounded-full bg-surface px-2 py-0.5 text-xs font-normal text-steel">
                           {it.cat}
                         </span>
                       )}
                       {it.q}
                     </span>
-                    <span className="shrink-0 text-slate-400">{isOpen ? '−' : '+'}</span>
+                    <span className="shrink-0 text-steel">{isOpen ? '−' : '+'}</span>
                   </button>
                   {isOpen && (
-                    <div className="px-4 pb-4 text-sm text-slate-600">
+                    <div className="px-4 pb-4 text-sm text-muted">
                       {it.a && (
                         <div
                           className="prose prose-sm max-w-none"
@@ -97,7 +97,7 @@ export default function Wsparcie() {
                         />
                       )}
                       {it.tip && (
-                        <div className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                        <div className="mt-2 rounded-lg bg-warn/15 px-3 py-2 text-xs text-warn">
                           💡 {it.tip}
                         </div>
                       )}
@@ -111,18 +111,18 @@ export default function Wsparcie() {
       )}
 
       {/* ── Przydatne kontakty / partnerzy ── */}
-      <h2 className="mt-10 mb-3 text-lg font-semibold text-slate-900">Przydatne kontakty</h2>
+      <h2 className="mt-10 mb-3 text-lg font-semibold text-cream">Przydatne kontakty</h2>
       <div className="space-y-3">
         {PARTNERS.map((p) => (
-          <div key={p.name} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="font-medium text-slate-900">{p.name}</h3>
-            <p className="mt-1 text-sm text-slate-500">{p.desc}</p>
+          <div key={p.name} className="rounded-2xl border border-line bg-card p-5 shadow-sm">
+            <h3 className="font-medium text-cream">{p.name}</h3>
+            <p className="mt-1 text-sm text-steel">{p.desc}</p>
             {p.url && (
               <a
                 href={p.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-block text-sm text-violet-600 hover:underline"
+                className="mt-2 inline-block text-sm text-brass hover:underline"
               >
                 {p.url} ↗
               </a>

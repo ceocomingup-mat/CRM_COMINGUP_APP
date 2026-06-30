@@ -15,10 +15,10 @@ const STATUS_LABEL: Record<string, string> = {
   lost: 'Utracony',
 }
 const STATUS_STYLE: Record<string, string> = {
-  free: 'bg-sky-50 text-sky-700',
-  assigned: 'bg-emerald-50 text-emerald-700',
-  rejected: 'bg-red-50 text-red-700',
-  lost: 'bg-slate-100 text-slate-600',
+  free: 'bg-info/15 text-info',
+  assigned: 'bg-go/15 text-go',
+  rejected: 'bg-bad/15 text-bad',
+  lost: 'bg-surface text-muted',
 }
 
 export default function LeadKarta() {
@@ -48,16 +48,16 @@ export default function LeadKarta() {
       .finally(() => setLoading(false))
   }, [id])
 
-  if (loading) return <p className="text-slate-400">Wczytywanie…</p>
+  if (loading) return <p className="text-steel">Wczytywanie…</p>
   if (error)
     return (
-      <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">Błąd: {error}</p>
+      <p className="rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">Błąd: {error}</p>
     )
   if (!lead)
     return (
       <div>
         <BackLink />
-        <p className="mt-4 text-slate-400">Nie znaleziono leada.</p>
+        <p className="mt-4 text-steel">Nie znaleziono leada.</p>
       </div>
     )
 
@@ -80,23 +80,23 @@ export default function LeadKarta() {
 
       <div className="mt-3 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-2xl font-semibold text-cream">
             {lead.firstName} {lead.lastName}
           </h1>
-          <p className="mt-1 text-slate-500">
+          <p className="mt-1 text-steel">
             {[lead.city, lead.province].filter(Boolean).join(', ') || 'Brak lokalizacji'}
           </p>
         </div>
         <span
           className={`rounded-full px-3 py-1 text-sm font-medium ${
-            STATUS_STYLE[lead.status] ?? 'bg-slate-100 text-slate-700'
+            STATUS_STYLE[lead.status] ?? 'bg-surface text-muted'
           }`}
         >
           {STATUS_LABEL[lead.status] ?? lead.status}
         </span>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-3 rounded-2xl border border-slate-200 bg-white p-5 text-sm shadow-sm sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-3 rounded-2xl border border-line bg-card p-5 text-sm shadow-sm sm:grid-cols-3">
         <Field label="Telefon" value={lead.phone} />
         <Field label="E-mail" value={lead.email} />
         <Field label="Źródło" value={lead.source} />
@@ -104,22 +104,22 @@ export default function LeadKarta() {
       </div>
 
       {/* Akcja: Rozpocznij proces (lead → klient, etap 1) */}
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mt-8 rounded-2xl border border-line bg-card p-5 shadow-sm">
         {existingClientId ? (
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-muted">
               Proces tego leada jest już rozpoczęty.
             </p>
             <Link
               to={`/klienci/${existingClientId}`}
-              className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-violet-700"
+              className="rounded-lg bg-brass px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-brass2"
             >
               Otwórz kartę klienta →
             </Link>
           </div>
         ) : (
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-muted">
               {lead.status === 'free'
                 ? 'Przejmiesz tego leada i stanie się Twoim klientem na etapie 1.'
                 : 'Lead stanie się klientem na etapie 1 i pojawi się w „Klienci".'}
@@ -127,14 +127,14 @@ export default function LeadKarta() {
             <button
               onClick={start}
               disabled={saving}
-              className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-violet-700 disabled:opacity-40"
+              className="rounded-lg bg-brass px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-brass2 disabled:opacity-40"
             >
               {saving ? 'Rozpoczynanie…' : 'Rozpocznij proces (etap 1)'}
             </button>
           </div>
         )}
         {actionError && (
-          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="mt-3 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
             Nie udało się rozpocząć procesu: {actionError}
           </p>
         )}
@@ -145,7 +145,7 @@ export default function LeadKarta() {
 
 function BackLink() {
   return (
-    <Link to="/leady" className="text-sm text-violet-600 hover:underline">
+    <Link to="/leady" className="text-sm text-brass hover:underline">
       ← Wróć do listy leadów
     </Link>
   )
@@ -154,8 +154,8 @@ function BackLink() {
 function Field({ label, value }: { label: string; value: string | null }) {
   return (
     <div>
-      <div className="text-xs uppercase tracking-wide text-slate-400">{label}</div>
-      <div className="text-slate-800">{value || '—'}</div>
+      <div className="text-xs uppercase tracking-wide text-steel">{label}</div>
+      <div className="text-cream">{value || '—'}</div>
     </div>
   )
 }

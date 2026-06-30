@@ -9,10 +9,10 @@ const STATUS_LABEL: Record<string, string> = {
   lost: 'Utracony',
 }
 const STATUS_STYLE: Record<string, string> = {
-  free: 'bg-sky-50 text-sky-700',
-  assigned: 'bg-emerald-50 text-emerald-700',
-  rejected: 'bg-red-50 text-red-700',
-  lost: 'bg-slate-100 text-slate-600',
+  free: 'bg-info/15 text-info',
+  assigned: 'bg-go/15 text-go',
+  rejected: 'bg-bad/15 text-bad',
+  lost: 'bg-surface text-muted',
 }
 
 export default function Leady() {
@@ -39,28 +39,28 @@ export default function Leady() {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Leady</h1>
+        <h1 className="text-2xl font-semibold text-cream">Leady</h1>
         {leads && (
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-steel">
             {leads.length} widocznych · {free} wolnych
           </span>
         )}
       </div>
 
       {error && (
-        <p className="mt-6 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-6 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
           Błąd wczytywania: {error}
         </p>
       )}
-      {!leads && !error && <p className="mt-6 text-slate-400">Wczytywanie…</p>}
+      {!leads && !error && <p className="mt-6 text-steel">Wczytywanie…</p>}
       {leads && leads.length === 0 && (
-        <p className="mt-6 text-slate-400">Brak leadów do wyświetlenia.</p>
+        <p className="mt-6 text-steel">Brak leadów do wyświetlenia.</p>
       )}
 
       {leads && leads.length > 0 && (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-card shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-steel">
               <tr>
                 <th className="px-4 py-3 font-medium">Lead</th>
                 <th className="px-4 py-3 font-medium">Lokalizacja</th>
@@ -69,30 +69,30 @@ export default function Leady() {
                 <th className="px-4 py-3 font-medium">Doradca</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {leads.map((l) => (
                 <tr
                   key={l.id}
                   onClick={() => navigate(`/leady/${l.id}`)}
-                  className="cursor-pointer hover:bg-slate-50"
+                  className="cursor-pointer hover:bg-surface"
                 >
-                  <td className="px-4 py-3 font-medium text-slate-900">
+                  <td className="px-4 py-3 font-medium text-cream">
                     {l.firstName} {l.lastName}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-muted">
                     {[l.city, l.province].filter(Boolean).join(', ') || '—'}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{l.source || '—'}</td>
+                  <td className="px-4 py-3 text-muted">{l.source || '—'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                        STATUS_STYLE[l.status] ?? 'bg-slate-100 text-slate-700'
+                        STATUS_STYLE[l.status] ?? 'bg-surface text-muted'
                       }`}
                     >
                       {STATUS_LABEL[l.status] ?? l.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-muted">
                     {l.advisorId ? names[l.advisorId] ?? '—' : '—'}
                   </td>
                 </tr>

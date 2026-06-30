@@ -19,10 +19,10 @@ const PRIORITY_LABEL: Record<string, string> = {
   low: 'Niski',
 }
 const PRIORITY_STYLE: Record<string, string> = {
-  high: 'bg-red-50 text-red-700',
-  medium: 'bg-amber-50 text-amber-700',
-  normal: 'bg-slate-100 text-slate-600',
-  low: 'bg-slate-100 text-slate-500',
+  high: 'bg-bad/15 text-bad',
+  medium: 'bg-warn/15 text-warn',
+  normal: 'bg-surface text-muted',
+  low: 'bg-surface text-steel',
 }
 
 function startOfToday(): number {
@@ -32,16 +32,16 @@ function startOfToday(): number {
 }
 
 function dueInfo(due: string | null): { label: string; cls: string } {
-  if (!due) return { label: 'bez terminu', cls: 'text-slate-400' }
+  if (!due) return { label: 'bez terminu', cls: 'text-steel' }
   const d = new Date(due)
-  if (isNaN(d.getTime())) return { label: '', cls: 'text-slate-400' }
+  if (isNaN(d.getTime())) return { label: '', cls: 'text-steel' }
   const day = new Date(d)
   day.setHours(0, 0, 0, 0)
   const diff = day.getTime() - startOfToday()
   const fmt = d.toLocaleDateString('pl-PL')
-  if (diff < 0) return { label: `zaległe · ${fmt}`, cls: 'text-red-600' }
-  if (diff === 0) return { label: 'dziś', cls: 'text-amber-600' }
-  return { label: fmt, cls: 'text-slate-500' }
+  if (diff < 0) return { label: `zaległe · ${fmt}`, cls: 'text-bad' }
+  if (diff === 0) return { label: 'dziś', cls: 'text-warn' }
+  return { label: fmt, cls: 'text-steel' }
 }
 
 export default function Pulpit() {
@@ -77,8 +77,8 @@ export default function Pulpit() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-semibold text-slate-900">Cześć, {fullName} 👋</h1>
-      <p className="mt-1 text-slate-500">Pulpit — przegląd Twoich danych.</p>
+      <h1 className="text-2xl font-semibold text-cream">Cześć, {fullName} 👋</h1>
+      <p className="mt-1 text-steel">Pulpit — przegląd Twoich danych.</p>
 
       <div className={`mt-8 grid gap-4 ${recruits > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}>
         <StatCard label="Klienci (widoczni)" value={clients} />
@@ -88,7 +88,7 @@ export default function Pulpit() {
 
       {myReport && (myReport.goalMm != null || myReport.goalContracts != null) && (
         <>
-          <h2 className="mt-10 mb-3 text-lg font-semibold text-slate-900">
+          <h2 className="mt-10 mb-3 text-lg font-semibold text-cream">
             Twoje tempo — ten miesiąc
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -108,10 +108,10 @@ export default function Pulpit() {
         </>
       )}
 
-      <h2 className="mt-10 mb-3 text-lg font-semibold text-slate-900">Co dziś zrobić</h2>
-      {!tasks && <p className="text-slate-400">Wczytywanie…</p>}
+      <h2 className="mt-10 mb-3 text-lg font-semibold text-cream">Co dziś zrobić</h2>
+      {!tasks && <p className="text-steel">Wczytywanie…</p>}
       {tasks && tasks.length === 0 && (
-        <p className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-slate-500 shadow-sm">
+        <p className="rounded-2xl border border-line bg-card px-5 py-4 text-steel shadow-sm">
           Brak zadań do zrobienia. 🎉
         </p>
       )}
@@ -122,18 +122,18 @@ export default function Pulpit() {
             return (
               <li
                 key={t.id}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                className="rounded-2xl border border-line bg-card p-4 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="font-medium text-slate-900">{t.title}</div>
+                    <div className="font-medium text-cream">{t.title}</div>
                     {t.notes && (
-                      <div className="mt-0.5 text-sm text-slate-500">{t.notes}</div>
+                      <div className="mt-0.5 text-sm text-steel">{t.notes}</div>
                     )}
                     {t.clientId && clientNames[t.clientId] && (
                       <Link
                         to={`/klienci/${t.clientId}`}
-                        className="mt-1 inline-block text-sm text-violet-600 hover:underline"
+                        className="mt-1 inline-block text-sm text-brass hover:underline"
                       >
                         Klient: {clientNames[t.clientId]}
                       </Link>
@@ -142,7 +142,7 @@ export default function Pulpit() {
                   <div className="flex shrink-0 flex-col items-end gap-1">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        PRIORITY_STYLE[t.priority] ?? 'bg-slate-100 text-slate-600'
+                        PRIORITY_STYLE[t.priority] ?? 'bg-surface text-muted'
                       }`}
                     >
                       {PRIORITY_LABEL[t.priority] ?? t.priority}
@@ -156,7 +156,7 @@ export default function Pulpit() {
         </ul>
       )}
 
-      <p className="mt-6 text-sm text-slate-400">
+      <p className="mt-6 text-sm text-steel">
         Liczby i zadania zależą od Twojej roli — ochrona danych (RLS) pilnuje, że
         doradca widzi mniej niż dyrektor, a dyrektor mniej niż admin.
       </p>
@@ -179,18 +179,18 @@ function PaceCard({
   const b = paceBadge(ratio)
   const progress = goal && goal > 0 ? Math.min(Math.round((actual / goal) * 100), 100) : 0
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-line bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <div className="text-xs uppercase tracking-wide text-slate-400">{label}</div>
+        <div className="text-xs uppercase tracking-wide text-steel">{label}</div>
         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${b.cls}`}>{b.label}</span>
       </div>
       <div className="mt-2 flex items-baseline justify-between text-sm">
-        <span className="font-semibold text-slate-900">{fmt(actual)}</span>
-        <span className="text-slate-400">{goal != null ? `cel ${fmt(goal)}` : 'brak celu'}</span>
+        <span className="font-semibold text-cream">{fmt(actual)}</span>
+        <span className="text-steel">{goal != null ? `cel ${fmt(goal)}` : 'brak celu'}</span>
       </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface">
         <div
-          className={`h-full rounded-full ${ratio != null && ratio >= 1 ? 'bg-emerald-500' : 'bg-violet-500'}`}
+          className={`h-full rounded-full ${ratio != null && ratio >= 1 ? 'bg-go' : 'bg-brass'}`}
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -200,11 +200,11 @@ function PaceCard({
 
 function StatCard({ label, value }: { label: string; value: number | null }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="text-3xl font-bold text-slate-900">
+    <div className="rounded-2xl border border-line bg-card p-5 shadow-sm">
+      <div className="text-3xl font-bold text-cream">
         {value === null ? '…' : value < 0 ? '—' : value}
       </div>
-      <div className="mt-1 text-sm text-slate-500">{label}</div>
+      <div className="mt-1 text-sm text-steel">{label}</div>
     </div>
   )
 }

@@ -80,8 +80,8 @@ export default function Mapa() {
   if (!TOKEN)
     return (
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-semibold text-slate-900">Mapa</h1>
-        <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">
+        <h1 className="text-2xl font-semibold text-cream">Mapa</h1>
+        <p className="mt-4 rounded-lg bg-warn/15 px-3 py-2 text-sm text-warn">
           Brak tokenu Mapbox (<code>VITE_MAPBOX_TOKEN</code>). Dodaj go w <code>app/.env.local</code>.
         </p>
       </div>
@@ -93,26 +93,26 @@ export default function Mapa() {
     <div>
       <div className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Mapa klientów</h1>
-          <p className="mt-1 text-slate-500">
+          <h1 className="text-2xl font-semibold text-cream">Mapa klientów</h1>
+          <p className="mt-1 text-steel">
             Lokalizacje Twoich klientów (kolor = status). Kliknij pinezkę po szczegóły.
           </p>
         </div>
         {geoCount != null && (
-          <span className="text-sm text-slate-500">{geoCount} na mapie</span>
+          <span className="text-sm text-steel">{geoCount} na mapie</span>
         )}
       </div>
 
       {error && (
-        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">Błąd: {error}</p>
+        <p className="mt-4 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">Błąd: {error}</p>
       )}
 
       <div
         ref={mapEl}
-        className="mt-5 h-[70vh] w-full overflow-hidden rounded-2xl border border-slate-200 shadow-sm"
+        className="mt-5 h-[70vh] w-full overflow-hidden rounded-2xl border border-line shadow-sm"
       />
 
-      <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500">
+      <div className="mt-3 flex flex-wrap gap-4 text-xs text-steel">
         {Object.entries(STATUS_LABEL).map(([k, label]) => (
           <span key={k} className="inline-flex items-center gap-1.5">
             <span className="h-3 w-3 rounded-full" style={{ background: STATUS_COLOR[k] }} />

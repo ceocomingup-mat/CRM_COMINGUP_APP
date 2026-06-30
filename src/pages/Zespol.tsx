@@ -52,8 +52,8 @@ export default function Zespol() {
   if (!allowed)
     return (
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-semibold text-slate-900">Zespół</h1>
-        <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">
+        <h1 className="text-2xl font-semibold text-cream">Zespół</h1>
+        <p className="mt-4 rounded-lg bg-warn/15 px-3 py-2 text-sm text-warn">
           Ten widok jest dostępny dla managerów, dyrektorów i administratorów.
         </p>
       </div>
@@ -64,12 +64,12 @@ export default function Zespol() {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Zespół</h1>
+        <h1 className="text-2xl font-semibold text-cream">Zespół</h1>
         {rows && (
-          <span className="flex items-center gap-2 text-sm text-slate-500">
+          <span className="flex items-center gap-2 text-sm text-steel">
             {live && (
-              <span className="inline-flex items-center gap-1.5 text-emerald-600">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="inline-flex items-center gap-1.5 text-go">
+                <span className="h-1.5 w-1.5 rounded-full bg-go" />
                 na żywo
               </span>
             )}
@@ -81,19 +81,19 @@ export default function Zespol() {
       </div>
 
       {error && (
-        <p className="mt-6 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-6 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
           Błąd wczytywania: {error}
         </p>
       )}
-      {!rows && !error && <p className="mt-6 text-slate-400">Wczytywanie…</p>}
+      {!rows && !error && <p className="mt-6 text-steel">Wczytywanie…</p>}
       {rows && rows.length === 0 && (
-        <p className="mt-6 text-slate-400">Brak osób w Twoim zakresie.</p>
+        <p className="mt-6 text-steel">Brak osób w Twoim zakresie.</p>
       )}
 
       {rows && rows.length > 0 && (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-card shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-steel">
               <tr>
                 <th className="px-4 py-3 font-medium">Osoba</th>
                 <th className="px-4 py-3 font-medium">Rola</th>
@@ -104,29 +104,29 @@ export default function Zespol() {
                 <th className="px-4 py-3 text-right font-medium">Zrekrutowani</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {rows.map((r) => (
-                <tr key={r.userId} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">
+                <tr key={r.userId} className="hover:bg-surface">
+                  <td className="px-4 py-3 font-medium text-cream">
                     {r.firstName} {r.lastName}
                     {r.userId === profile.id && (
-                      <span className="ml-2 rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700">
+                      <span className="ml-2 rounded-full bg-brass/15 px-2 py-0.5 text-xs text-brass">
                         Ty
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{ROLE_LABEL[r.role] ?? r.role}</td>
-                  <td className="px-4 py-3 text-right tabular-nums text-slate-800">
+                  <td className="px-4 py-3 text-muted">{ROLE_LABEL[r.role] ?? r.role}</td>
+                  <td className="px-4 py-3 text-right tabular-nums text-cream">
                     {r.clientsActive}
                   </td>
-                  <td className="px-4 py-3 text-right tabular-nums text-emerald-700">
+                  <td className="px-4 py-3 text-right tabular-nums text-go">
                     {r.clientsWon}
                   </td>
-                  <td className="px-4 py-3 text-right tabular-nums text-slate-600">
+                  <td className="px-4 py-3 text-right tabular-nums text-muted">
                     {fmtMM(r.mmWon)}
                   </td>
-                  <td className="px-4 py-3 text-right tabular-nums text-slate-600">{r.leadsTotal}</td>
-                  <td className="px-4 py-3 text-right tabular-nums text-slate-600">
+                  <td className="px-4 py-3 text-right tabular-nums text-muted">{r.leadsTotal}</td>
+                  <td className="px-4 py-3 text-right tabular-nums text-muted">
                     {r.recruits || '—'}
                   </td>
                 </tr>
@@ -136,8 +136,8 @@ export default function Zespol() {
         </div>
       )}
 
-      <p className="mt-4 text-sm text-slate-500">
-        Agregaty liczone w bazie (widok <code className="text-slate-600">v_team_pipeline</code>),
+      <p className="mt-4 text-sm text-steel">
+        Agregaty liczone w bazie (widok <code className="text-muted">v_team_pipeline</code>),
         zakres wg RLS — widzisz siebie i swoje podległe struktury. Zmiany odświeżają się na żywo.
       </p>
     </div>

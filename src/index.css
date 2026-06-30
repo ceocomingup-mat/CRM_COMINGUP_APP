@@ -1,7 +1,38 @@
 @import "tailwindcss";
 
+/* Fonty prototypu */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ── Design system z prototypu (ciemny + mosiądz) jako tokeny Tailwind v4 ──── */
+@theme {
+  --color-bg: #0b0d10;
+  --color-surface: #1e242c;   /* surface-3: nagłówki tabel, hover */
+  --color-card: #161a20;      /* surface-2: karty */
+  --color-cardhi: #2a313b;    /* surface-4: podświetlenie */
+  --color-line: #2b323c;
+  --color-line2: #3b4552;
+  --color-cream: #f6f4ef;     /* tekst główny */
+  --color-muted: #b6bec8;     /* tekst drugorzędny */
+  --color-steel: #828d9b;     /* etykiety/przygaszony */
+  --color-brass: #dca33c;     /* akcent (złoto/mosiądz) */
+  --color-brass2: #f0c66c;
+  --color-ink: #1a1208;       /* ciemny tekst na mosiądzu */
+  --color-go: #33cf86;        /* zielony */
+  --color-warn: #e6ad42;      /* bursztyn */
+  --color-bad: #ef5b60;       /* czerwony */
+  --color-info: #56a0e6;      /* niebieski */
+
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 18px;
+}
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 html, body, #root {
@@ -10,5 +41,32 @@ html, body, #root {
 }
 
 body {
-  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-cream);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Nagłówki w foncie display (jak prototyp) */
+h1, h2, h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Subtelny pasek przewijania pod ciemny motyw */
+* { scrollbar-color: var(--color-line2) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-line2); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Popupy Mapbox pod ciemny motyw */
+.mapboxgl-popup-content {
+  background: var(--color-card);
+  color: var(--color-cream);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+}
+.mapboxgl-popup-content > div div { color: var(--color-muted) !important; }
+.mapboxgl-popup-content > div > div:first-child { color: var(--color-cream) !important; }
+.mapboxgl-popup-tip { border-top-color: var(--color-card) !important; border-bottom-color: var(--color-card) !important; }
+.mapboxgl-popup-close-button { color: var(--color-steel); }

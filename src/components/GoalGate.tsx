@@ -101,24 +101,24 @@ export default function GoalGate({ profile }: { profile: Profile }) {
 
   return (
     <Overlay>
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-line bg-card p-7 shadow-2xl">
         <div className="mb-5 flex items-center justify-center gap-1.5">
           {needed.map((_, i) => (
             <span
               key={i}
               className={`h-1.5 rounded-full transition-all ${
-                i === idx ? 'w-6 bg-violet-600' : i < idx ? 'w-6 bg-violet-300' : 'w-3 bg-slate-200'
+                i === idx ? 'w-6 bg-brass' : i < idx ? 'w-6 bg-brass/40' : 'w-3 bg-cardhi'
               }`}
             />
           ))}
         </div>
 
         <div className="mb-6 text-center">
-          <span className="inline-block rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
+          <span className="inline-block rounded-full bg-brass/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brass">
             {p.label}
           </span>
-          <h2 className="mt-3 text-xl font-bold text-slate-900">Ustaw cele na {p.subtitle}</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="mt-3 text-xl font-bold text-cream">Ustaw cele na {p.subtitle}</h2>
+          <p className="mt-1 text-sm text-steel">
             Zanim przejdziesz dalej, określ swoje cele. Krok {idx + 1} z {needed.length}.
           </p>
         </div>
@@ -131,7 +131,7 @@ export default function GoalGate({ profile }: { profile: Profile }) {
               value={mm}
               onChange={(e) => setMm(e.target.value)}
               placeholder="np. 25000"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base font-medium outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+              className="w-full rounded-lg border border-line2 px-3 py-2.5 text-base font-medium outline-none focus:border-brass focus:ring-2 focus:ring-brass/30"
             />
           </Labelled>
           <Labelled label="Liczba umów">
@@ -141,19 +141,19 @@ export default function GoalGate({ profile }: { profile: Profile }) {
               value={contracts}
               onChange={(e) => setContracts(e.target.value)}
               placeholder="np. 4"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base font-medium outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+              className="w-full rounded-lg border border-line2 px-3 py-2.5 text-base font-medium outline-none focus:border-brass focus:ring-2 focus:ring-brass/30"
             />
           </Labelled>
         </div>
 
         {error && (
-          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+          <p className="mt-4 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">{error}</p>
         )}
 
         <button
           onClick={save}
           disabled={saving}
-          className="mt-6 w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-violet-700 disabled:opacity-50"
+          className="mt-6 w-full rounded-xl bg-brass px-4 py-3 text-sm font-bold text-ink transition hover:bg-brass2 disabled:opacity-50"
         >
           {saving ? 'Zapisywanie…' : idx + 1 >= needed.length ? 'Zapisz i wejdź do panelu' : 'Dalej →'}
         </button>
@@ -164,8 +164,8 @@ export default function GoalGate({ profile }: { profile: Profile }) {
 
 function Overlay({ children }: { children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/70 p-4 backdrop-blur-sm">
-      {typeof children === 'string' ? <span className="text-slate-200">{children}</span> : children}
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4 backdrop-blur-sm">
+      {typeof children === 'string' ? <span className="text-muted">{children}</span> : children}
     </div>
   )
 }
@@ -173,7 +173,7 @@ function Overlay({ children }: { children: React.ReactNode }) {
 function Labelled({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-steel">
         {label}
       </label>
       {children}

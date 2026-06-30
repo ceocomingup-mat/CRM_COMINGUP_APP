@@ -35,13 +35,13 @@ export default function Materialy() {
     <div className="max-w-3xl">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Materiały</h1>
-          <p className="mt-1 text-slate-500">Baza materiałów: treści, linki i wideo.</p>
+          <h1 className="text-2xl font-semibold text-cream">Materiały</h1>
+          <p className="mt-1 text-steel">Baza materiałów: treści, linki i wideo.</p>
         </div>
         {isAdmin && (
           <button
             onClick={() => setAdding((v) => !v)}
-            className="shrink-0 rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-violet-700"
+            className="shrink-0 rounded-lg bg-brass px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-brass2"
           >
             {adding ? 'Anuluj' : '+ Dodaj materiał'}
           </button>
@@ -49,7 +49,7 @@ export default function Materialy() {
       </div>
 
       {error && (
-        <p className="mt-6 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-6 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
           Błąd: {error}
         </p>
       )}
@@ -64,29 +64,29 @@ export default function Materialy() {
         />
       )}
 
-      {!materials && !error && <p className="mt-6 text-slate-400">Wczytywanie…</p>}
+      {!materials && !error && <p className="mt-6 text-steel">Wczytywanie…</p>}
       {materials && materials.length === 0 && (
-        <p className="mt-6 text-slate-400">Brak materiałów.</p>
+        <p className="mt-6 text-steel">Brak materiałów.</p>
       )}
 
       <div className="mt-6 space-y-6">
         {[...byCat.entries()].map(([cat, items]) => (
           <div key={cat}>
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-steel">
               {cat}
             </div>
             <div className="space-y-3">
               {items.map((m) => (
                 <div
                   key={m.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                  className="rounded-2xl border border-line bg-card p-5 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                      <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-medium text-muted">
                         {TYPE_LABEL[m.type] ?? m.type}
                       </span>
-                      <h3 className="font-medium text-slate-900">{m.title}</h3>
+                      <h3 className="font-medium text-cream">{m.title}</h3>
                     </div>
                     {isAdmin && (
                       <button
@@ -98,17 +98,17 @@ export default function Materialy() {
                             setError(e instanceof Error ? e.message : String(e))
                           }
                         }}
-                        className="shrink-0 text-xs text-red-500 hover:underline"
+                        className="shrink-0 text-xs text-bad hover:underline"
                       >
                         Usuń
                       </button>
                     )}
                   </div>
                   {m.description && (
-                    <p className="mt-1 text-sm text-slate-500">{m.description}</p>
+                    <p className="mt-1 text-sm text-steel">{m.description}</p>
                   )}
                   {m.type === 'video' && m.url && (
-                    <div className="mt-3 aspect-video overflow-hidden rounded-lg bg-slate-100">
+                    <div className="mt-3 aspect-video overflow-hidden rounded-lg bg-surface">
                       <iframe src={m.url} title={m.title ?? 'video'} className="h-full w-full" allowFullScreen />
                     </div>
                   )}
@@ -117,14 +117,14 @@ export default function Materialy() {
                       href={m.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 inline-block text-sm text-violet-600 hover:underline"
+                      className="mt-2 inline-block text-sm text-brass hover:underline"
                     >
                       Otwórz: {m.url} ↗
                     </a>
                   )}
                   {m.type === 'html' && m.content && (
                     <div
-                      className="prose prose-sm mt-3 max-w-none text-sm text-slate-700"
+                      className="prose prose-sm mt-3 max-w-none text-sm text-muted"
                       dangerouslySetInnerHTML={{ __html: m.content }}
                     />
                   )}
@@ -172,14 +172,14 @@ function AddMaterialForm({
     }
   }
 
-  const input = 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200'
+  const input = 'w-full rounded-lg border border-line2 px-3 py-2 text-sm outline-none focus:border-brass focus:ring-2 focus:ring-brass/30'
 
   return (
-    <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-3 text-sm font-semibold text-slate-900">Nowy materiał</h2>
+    <div className="mt-5 rounded-2xl border border-line bg-card p-5 shadow-sm">
+      <h2 className="mb-3 text-sm font-semibold text-cream">Nowy materiał</h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="text-sm">
-          <span className="mb-1 block text-xs font-medium text-slate-500">Typ</span>
+          <span className="mb-1 block text-xs font-medium text-steel">Typ</span>
           <select value={type} onChange={(e) => setType(e.target.value)} className={input}>
             <option value="link">Link</option>
             <option value="video">Wideo (embed)</option>
@@ -187,20 +187,20 @@ function AddMaterialForm({
           </select>
         </label>
         <label className="text-sm">
-          <span className="mb-1 block text-xs font-medium text-slate-500">Kategoria</span>
+          <span className="mb-1 block text-xs font-medium text-steel">Kategoria</span>
           <input value={cat} onChange={(e) => setCat(e.target.value)} className={input} placeholder="np. Dokumenty" />
         </label>
       </div>
       <label className="mt-3 block text-sm">
-        <span className="mb-1 block text-xs font-medium text-slate-500">Tytuł</span>
+        <span className="mb-1 block text-xs font-medium text-steel">Tytuł</span>
         <input value={title} onChange={(e) => setTitle(e.target.value)} className={input} placeholder="Tytuł materiału" />
       </label>
       <label className="mt-3 block text-sm">
-        <span className="mb-1 block text-xs font-medium text-slate-500">Opis (opcjonalnie)</span>
+        <span className="mb-1 block text-xs font-medium text-steel">Opis (opcjonalnie)</span>
         <input value={description} onChange={(e) => setDescription(e.target.value)} className={input} />
       </label>
       <label className="mt-3 block text-sm">
-        <span className="mb-1 block text-xs font-medium text-slate-500">
+        <span className="mb-1 block text-xs font-medium text-steel">
           {type === 'html' ? 'Treść HTML' : 'URL'}
         </span>
         {type === 'html' ? (
@@ -212,7 +212,7 @@ function AddMaterialForm({
       <button
         onClick={submit}
         disabled={saving}
-        className="mt-4 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700 disabled:opacity-40"
+        className="mt-4 rounded-lg bg-brass px-4 py-2 text-sm font-medium text-ink transition hover:bg-brass2 disabled:opacity-40"
       >
         {saving ? 'Zapisywanie…' : 'Zapisz materiał'}
       </button>

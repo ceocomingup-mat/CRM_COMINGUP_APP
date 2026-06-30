@@ -7,21 +7,21 @@ function describe(e: ActivityRow): { label: string; dot: string } {
   const s = e.stage != null ? ` E${e.stage}` : ''
   switch (e.type) {
     case 'stage_enter':
-      return { label: `Wejście na etap${s}`, dot: 'bg-violet-500' }
+      return { label: `Wejście na etap${s}`, dot: 'bg-brass' }
     case 'stage_done':
-      return { label: `Zamknięcie etapu${s}`, dot: 'bg-emerald-500' }
+      return { label: `Zamknięcie etapu${s}`, dot: 'bg-go' }
     case 'stage_revert':
-      return { label: `Cofnięcie do etapu${s}`, dot: 'bg-amber-500' }
+      return { label: `Cofnięcie do etapu${s}`, dot: 'bg-warn' }
     case 'checklist':
-      return { label: 'Aktualizacja checklisty', dot: 'bg-slate-400' }
+      return { label: 'Aktualizacja checklisty', dot: 'bg-steel' }
     case 'note':
-      return { label: 'Notatka', dot: 'bg-slate-400' }
+      return { label: 'Notatka', dot: 'bg-steel' }
     case 'lost':
-      return { label: 'Klient utracony', dot: 'bg-red-500' }
+      return { label: 'Klient utracony', dot: 'bg-bad' }
     case 'admin_action':
-      return { label: 'Akcja administracyjna', dot: 'bg-sky-500' }
+      return { label: 'Akcja administracyjna', dot: 'bg-info' }
     default:
-      return { label: e.type, dot: 'bg-slate-400' }
+      return { label: e.type, dot: 'bg-steel' }
   }
 }
 
@@ -61,26 +61,26 @@ export default function Aktywnosc() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Aktywność</h1>
+        <h1 className="text-2xl font-semibold text-cream">Aktywność</h1>
         {live && (
-          <span className="inline-flex items-center gap-1.5 text-sm text-emerald-600">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="inline-flex items-center gap-1.5 text-sm text-go">
+            <span className="h-1.5 w-1.5 rounded-full bg-go" />
             na żywo
           </span>
         )}
       </div>
-      <p className="mt-1 text-slate-500">
+      <p className="mt-1 text-steel">
         Log zdarzeń w Twoim zakresie (RLS) — przejścia etapów, akcje na klientach.
       </p>
 
       {error && (
-        <p className="mt-6 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-6 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">
           Błąd wczytywania: {error}
         </p>
       )}
-      {!rows && !error && <p className="mt-6 text-slate-400">Wczytywanie…</p>}
+      {!rows && !error && <p className="mt-6 text-steel">Wczytywanie…</p>}
       {rows && rows.length === 0 && (
-        <p className="mt-6 text-slate-400">Brak zdarzeń do wyświetlenia.</p>
+        <p className="mt-6 text-steel">Brak zdarzeń do wyświetlenia.</p>
       )}
 
       {rows && rows.length > 0 && (
@@ -93,10 +93,10 @@ export default function Aktywnosc() {
               <li key={e.id} className="flex gap-3">
                 <div className="flex flex-col items-center pt-1.5">
                   <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${d.dot}`} />
-                  <span className="mt-1 w-px flex-1 bg-slate-200" />
+                  <span className="mt-1 w-px flex-1 bg-cardhi" />
                 </div>
                 <div className="pb-4">
-                  <div className="text-sm text-slate-800">
+                  <div className="text-sm text-cream">
                     <span className="font-medium">{d.label}</span>
                     {client && (
                       <>
@@ -104,7 +104,7 @@ export default function Aktywnosc() {
                         {e.clientId ? (
                           <Link
                             to={`/klienci/${e.clientId}`}
-                            className="text-violet-600 hover:underline"
+                            className="text-brass hover:underline"
                           >
                             {client}
                           </Link>
@@ -114,11 +114,11 @@ export default function Aktywnosc() {
                       </>
                     )}
                   </div>
-                  <div className="mt-0.5 text-xs text-slate-400">
+                  <div className="mt-0.5 text-xs text-steel">
                     {who && <span>{who} · </span>}
                     {fmtWhen(e.createdAt)}
                   </div>
-                  {e.note && <div className="mt-1 text-sm text-slate-500">{e.note}</div>}
+                  {e.note && <div className="mt-1 text-sm text-steel">{e.note}</div>}
                 </div>
               </li>
             )

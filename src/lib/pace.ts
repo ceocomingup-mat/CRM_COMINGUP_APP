@@ -28,9 +28,9 @@ export interface PaceBadge {
 
 // Etykieta + kolor dla współczynnika tempa.
 export function paceBadge(ratio: number | null): PaceBadge {
-  if (ratio == null) return { label: 'brak celu', cls: 'bg-slate-100 text-slate-500' }
-  if (ratio >= 1.05) return { label: 'przed planem', cls: 'bg-emerald-50 text-emerald-700' }
-  if (ratio >= 0.9) return { label: 'w tempie', cls: 'bg-emerald-50 text-emerald-700' }
-  if (ratio >= 0.75) return { label: 'lekko z tyłu', cls: 'bg-amber-50 text-amber-700' }
-  return { label: 'za planem', cls: 'bg-red-50 text-red-700' }
+  if (ratio == null) return { label: 'brak celu', cls: 'bg-surface text-steel' }
+  if (ratio >= 1.05) return { label: 'przed planem', cls: 'bg-go/15 text-go' }
+  if (ratio >= 0.9) return { label: 'w tempie', cls: 'bg-go/15 text-go' }
+  if (ratio >= 0.75) return { label: 'lekko z tyłu', cls: 'bg-warn/15 text-warn' }
+  return { label: 'za planem', cls: 'bg-bad/15 text-bad' }
 }
