@@ -152,6 +152,25 @@ export async function listTasks(): Promise<Task[]> {
   return repo.list<Task>('tasks')
 }
 
+/* Zadania — RLS: użytkownik czyta/edytuje/dodaje w swoim zakresie (assigned_to ∈ scope). */
+export async function setTaskStatus(id: string, status: string): Promise<Task> {
+  return repo.update<Task>('tasks', id, { status })
+}
+export async function createTask(t: {
+  assignedTo: string
+  title: string
+  notes: string | null
+  dueDate: string | null
+  priority: string
+  clientId: string | null
+}): Promise<Task> {
+  return repo.create<Task>('tasks', {
+    ...t,
+    assignedBy: t.assignedTo,
+    status: 'pending',
+  })
+}
+
 /* ── B12.2: agregaty zespołu z backendu (widok v_team_pipeline, RLS pytającego) ── */
 export interface TeamRow {
   userId: string

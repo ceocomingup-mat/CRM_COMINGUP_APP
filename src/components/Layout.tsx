@@ -24,6 +24,7 @@ const NAV = [
   { to: '/', label: 'Pulpit', end: true },
   { to: '/klienci', label: 'Klienci', end: false },
   { to: '/leady', label: 'Leady', end: false },
+  { to: '/zadania', label: 'Zadania', end: false },
   { to: '/umowy', label: 'Umowy', end: false },
   { to: '/kalkulator', label: 'Kalkulator', end: false },
   { to: '/mapa', label: 'Mapa', end: false },

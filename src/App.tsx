@@ -9,6 +9,7 @@ import KlientKarta from './pages/KlientKarta'
 import Leady from './pages/Leady'
 import LeadKarta from './pages/LeadKarta'
 import Umowy from './pages/Umowy'
+import Zadania from './pages/Zadania'
 import Kalkulator from './pages/Kalkulator'
 import Zespol from './pages/Zespol'
 import Raporty from './pages/Raporty'
@@ -50,6 +51,7 @@ function App() {
           <Route path="leady" element={<Leady />} />
           <Route path="leady/:id" element={<LeadKarta />} />
           <Route path="umowy" element={<Umowy />} />
+          <Route path="zadania" element={<Zadania />} />
           <Route path="kalkulator" element={<Kalkulator />} />
           <Route path="aktywnosc" element={<Aktywnosc />} />
           <Route path="szkolenia" element={<Szkolenia />} />
