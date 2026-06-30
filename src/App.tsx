@@ -12,6 +12,7 @@ import Umowy from './pages/Umowy'
 import Zadania from './pages/Zadania'
 import Aktualnosci from './pages/Aktualnosci'
 import Ranking from './pages/Ranking'
+import Profil from './pages/Profil'
 import Kalkulator from './pages/Kalkulator'
 import Zespol from './pages/Zespol'
 import Raporty from './pages/Raporty'
@@ -58,6 +59,7 @@ function App() {
           <Route path="aktualnosci" element={<Aktualnosci />} />
           <Route path="aktywnosc" element={<Aktywnosc />} />
           <Route path="ranking" element={<Ranking />} />
+          <Route path="profil" element={<Profil />} />
           <Route path="szkolenia" element={<Szkolenia />} />
           <Route path="materialy" element={<Materialy />} />
           <Route path="wsparcie" element={<Wsparcie />} />

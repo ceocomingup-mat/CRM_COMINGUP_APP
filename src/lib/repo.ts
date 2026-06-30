@@ -98,6 +98,31 @@ export async function getClient(id: string): Promise<Client | null> {
   return repo.get<Client>('clients', id)
 }
 
+/* ── Profil użytkownika (własny wiersz users; RLS: czyta/edytuje siebie) ── */
+export interface UserFull {
+  id: string
+  role: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string | null
+  rank: string
+  rankPct: number
+  provinces: string[]
+  managerId: string | null
+}
+export async function getUser(id: string): Promise<UserFull | null> {
+  return repo.get<UserFull>('users', id)
+}
+/* Edycja własnego profilu — tylko pola niewrażliwe (imię/nazwisko/telefon).
+ * Pola wrażliwe (rola/ranga/%/struktura) blokuje trigger app.users_guard_sensitive. */
+export async function updateProfile(
+  id: string,
+  patch: { firstName?: string; lastName?: string; phone?: string | null },
+): Promise<UserFull> {
+  return repo.update<UserFull>('users', id, patch)
+}
+
 /* Przesuń klienta na inny etap przez SERWEROWE RPC `advance_stage` (B4.7):
  * atomowo zapisuje `clients.current_stage` + `client_stage_history` (RLS = server-only)
  * + audyt do `events`, z gardą roli/własności po stronie bazy (admin lub właściciel).
