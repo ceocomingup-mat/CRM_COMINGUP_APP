@@ -303,6 +303,39 @@ export async function listCommissionMeta(): Promise<CommissionMeta[]> {
   return repo.list<CommissionMeta>('commissions')
 }
 
+/* Ranking: statystyki wszystkich widocznych osób (v_user_stats, RLS pytającego). */
+export async function listTeamStats(): Promise<UserStats[]> {
+  const { data, error } = await supabase
+    .from('v_user_stats')
+    .select('user_id, contracts_all_time, mm_all_time, month_contracts, month_mm, own_tranches_total, own_tranches_paid, own_tranches_in_play, override_income_total')
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((r) => {
+    const o = rawRepo.fromDb<UserStats>('v_user_stats', r)
+    return {
+      ...o,
+      contractsAllTime: num(o.contractsAllTime), mmAllTime: num(o.mmAllTime),
+      monthContracts: num(o.monthContracts), monthMm: num(o.monthMm),
+      ownTranchesTotal: num(o.ownTranchesTotal), ownTranchesPaid: num(o.ownTranchesPaid),
+      ownTranchesInPlay: num(o.ownTranchesInPlay), overrideIncomeTotal: num(o.overrideIncomeTotal),
+    }
+  })
+}
+
+/* ── Aktualności (news) ── */
+export interface News {
+  id: string
+  authorId: string | null
+  scope: string
+  title: string | null
+  content: string | null
+  pinned: boolean
+  priority: string | null
+  createdAt: string
+}
+export async function listNews(): Promise<News[]> {
+  return repo.list<News>('news')
+}
+
 /* ── B9: Szkolenia + baza wiedzy (materials / qa_items / tests / test_attempts) ── */
 export interface Material {
   id: string
