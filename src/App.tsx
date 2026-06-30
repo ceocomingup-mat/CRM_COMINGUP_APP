@@ -1,0 +1,62 @@
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { restoreSession, type Profile } from './lib/supabase'
+import Login from './pages/Login'
+import Layout from './components/Layout'
+import Pulpit from './pages/Pulpit'
+import Klienci from './pages/Klienci'
+import KlientKarta from './pages/KlientKarta'
+import Leady from './pages/Leady'
+import LeadKarta from './pages/LeadKarta'
+import Zespol from './pages/Zespol'
+import Raporty from './pages/Raporty'
+import Aktywnosc from './pages/Aktywnosc'
+import Szkolenia from './pages/Szkolenia'
+import Materialy from './pages/Materialy'
+import Wsparcie from './pages/Wsparcie'
+import GoalGate from './components/GoalGate'
+
+function App() {
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [booting, setBooting] = useState(true)
+
+  useEffect(() => {
+    restoreSession()
+      .then((p) => setProfile(p))
+      .finally(() => setBooting(false))
+  }, [])
+
+  if (booting) {
+    return (
+      <div className="min-h-svh grid place-items-center text-slate-400">Ładowanie…</div>
+    )
+  }
+
+  if (!profile) return <Login onLoggedIn={setProfile} />
+
+  return (
+    <>
+      <GoalGate profile={profile} />
+      <BrowserRouter>
+      <Routes>
+        <Route element={<Layout profile={profile} onLogout={() => setProfile(null)} />}>
+          <Route index element={<Pulpit />} />
+          <Route path="klienci" element={<Klienci />} />
+          <Route path="klienci/:id" element={<KlientKarta />} />
+          <Route path="leady" element={<Leady />} />
+          <Route path="leady/:id" element={<LeadKarta />} />
+          <Route path="aktywnosc" element={<Aktywnosc />} />
+          <Route path="szkolenia" element={<Szkolenia />} />
+          <Route path="materialy" element={<Materialy />} />
+          <Route path="wsparcie" element={<Wsparcie />} />
+          <Route path="zespol" element={<Zespol />} />
+          <Route path="raporty" element={<Raporty />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+      </BrowserRouter>
+    </>
+  )
+}
+
+export default App
