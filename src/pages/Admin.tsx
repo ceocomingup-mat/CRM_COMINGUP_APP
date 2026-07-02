@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useProfile } from '../components/Layout'
 import { listAllUsers, adminUpdateUser, type UserFull } from '../lib/repo'
+import AdminZawody from '../components/AdminZawody'
 
 const ROLE_LABEL: Record<string, string> = {
   admin: 'Administrator', dyrektor: 'Dyrektor', manager: 'Manager', doradca: 'Doradca',
@@ -10,6 +11,7 @@ const ROLE_ORDER: Record<string, number> = { admin: 0, dyrektor: 1, manager: 2, 
 export default function Admin() {
   const profile = useProfile()
   const isAdmin = profile.role === 'admin'
+  const [tab, setTab] = useState<'konta' | 'zawody'>('konta')
   const [users, setUsers] = useState<UserFull[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [editId, setEditId] = useState<string | null>(null)
@@ -42,8 +44,31 @@ export default function Admin() {
   return (
     <div className="max-w-3xl">
       <div className="kicker">Administracja</div>
-      <h1 className="text-2xl font-semibold text-cream">Administracja — konta</h1>
-      <p className="mt-1 text-steel">
+      <h1 className="text-2xl font-semibold text-cream">Administracja</h1>
+
+      <div className="mt-4 flex gap-1 rounded-xl bg-surface p-1 text-sm w-fit">
+        {(['konta', 'zawody'] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`rounded-lg px-4 py-1.5 font-medium capitalize transition ${
+              tab === t ? 'bg-brass text-ink' : 'text-muted hover:text-cream'
+            }`}
+          >
+            {t === 'konta' ? 'Konta' : 'Zawody'}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'zawody' && (
+        <div className="mt-5">
+          <AdminZawody />
+        </div>
+      )}
+
+      {tab === 'konta' && (
+        <>
+      <p className="mt-4 text-steel">
         Role, rangi i stawki zmieniają się serwerowo (RPC z gardą admina, audyt w events).
       </p>
 
@@ -79,6 +104,8 @@ export default function Admin() {
             </tbody>
           </table>
         </div>
+      )}
+        </>
       )}
     </div>
   )

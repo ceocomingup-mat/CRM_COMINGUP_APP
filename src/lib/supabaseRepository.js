@@ -100,7 +100,7 @@ const COLUMNS = {
   tests: ['id','legacy_id','title','description','passing_score','required','active','questions','created_at','updated_at'],
   test_attempts: ['id','test_id','user_id','score','passed','answers','created_at'],
   areas: ['id','legacy_id','name','city','province','description','created_at','updated_at'],
-  contests: ['id','legacy_id','title','metric','period','start_ts','end_ts','scope','reward_badge','reward_cash','reward_text','status','winner_id','winner_value','closed_at','post_news','created_by','created_at','updated_at'],
+  contests: ['id','legacy_id','title','metric','period','start_ts','end_ts','scope','reward_badge','reward_cash','reward_text','status','winner_id','winner_value','closed_at','post_news','created_by','description','image_url','attachment_url','attachment_name','created_at','updated_at'],
   rank_defs: ['id','legacy_id','league','name','min_contracts','pct','basis','req','req_label'],
   stages: ['id','stage_order','name','description','icon','required_fields','mm_required','can_lose','can_revert','checklist'],
   reports: ['id','type','period','payload','created_by','created_at'],

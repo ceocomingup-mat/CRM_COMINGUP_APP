@@ -514,6 +514,10 @@ export interface Contest {
   winnerId: string | null
   winnerValue: number | null
   closedAt: string | null
+  description: string | null
+  imageUrl: string | null
+  attachmentUrl: string | null
+  attachmentName: string | null
 }
 export async function listContests(): Promise<Contest[]> {
   const rows = await repo.list<Contest>('contests')
@@ -522,6 +526,58 @@ export async function listContests(): Promise<Contest[]> {
     rewardCash: c.rewardCash == null ? null : Number(c.rewardCash),
     winnerValue: c.winnerValue == null ? null : Number(c.winnerValue),
   }))
+}
+
+/* Zapis zawodów — RLS przepuszcza admina lub twórcę (contests_write, B1.4 §4.6). */
+export interface ContestInput {
+  title: string
+  metric: string
+  period: string | null
+  startTs: string | null
+  endTs: string | null
+  rewardBadge: string | null
+  rewardCash: number | null
+  rewardText: string | null
+  description: string | null
+  imageUrl: string | null
+  attachmentUrl: string | null
+  attachmentName: string | null
+}
+export async function createContest(input: ContestInput, createdBy: string): Promise<Contest> {
+  return repo.create<Contest>('contests', {
+    ...input,
+    scope: 'all',
+    status: 'active',
+    createdBy,
+  })
+}
+export async function updateContest(id: string, patch: Partial<ContestInput>): Promise<Contest> {
+  return repo.update<Contest>('contests', id, patch)
+}
+export async function closeContest(
+  id: string,
+  winner: { winnerId: string | null; winnerValue: number | null },
+): Promise<Contest> {
+  return repo.update<Contest>('contests', id, {
+    status: 'closed',
+    closedAt: new Date().toISOString(),
+    ...winner,
+  })
+}
+export async function deleteContest(id: string): Promise<void> {
+  return repo.remove('contests', id)
+}
+
+/* Upload grafiki/pliku programu do Storage (bucket contest-assets, public;
+ * zapis tylko admin — polityki ZAWODY3_program_media.sql). Zwraca publiczny URL. */
+export async function uploadContestAsset(file: File, kind: 'image' | 'attachment'): Promise<string> {
+  const ext = (file.name.split('.').pop() ?? 'bin').toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin'
+  const path = `${kind}/${crypto.randomUUID()}.${ext}`
+  const { error } = await supabase.storage
+    .from('contest-assets')
+    .upload(path, file, { contentType: file.type || undefined })
+  if (error) throw new Error(error.message)
+  return supabase.storage.from('contest-assets').getPublicUrl(path).data.publicUrl
 }
 
 /* ── Powiadomienia (notifications) — RLS: własne ── */
