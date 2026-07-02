@@ -60,8 +60,8 @@ export default function Zawody() {
   return (
     <div className="max-w-3xl">
       <div className="text-xs font-semibold uppercase tracking-[0.15em] text-brass">Rywalizacja</div>
-      <h1 className="mt-1 text-2xl font-semibold text-cream">Zawody</h1>
-      <p className="mt-1 text-steel">Konkursy struktury — ranking liczony z umów w okresie konkursu.</p>
+      <h1 className="mt-1 text-2xl font-semibold text-cream">Programy motywacyjne</h1>
+      <p className="mt-1 text-steel">Programy struktury — ranking liczony z umów w okresie programu.</p>
 
       {error && (
         <p className="mt-6 rounded-lg bg-bad/15 px-3 py-2 text-sm text-bad">Błąd: {error}</p>
@@ -69,7 +69,7 @@ export default function Zawody() {
       {!contests && !error && <p className="mt-6 text-steel">Wczytywanie…</p>}
       {contests && contests.length === 0 && (
         <p className="mt-6 rounded-lg bg-cardhi/60 px-3 py-2 text-sm text-muted">
-          Brak ogłoszonych konkursów. Administrator może ogłosić zawody.
+          Brak ogłoszonych programów. Administrator może ogłosić program motywacyjny.
         </p>
       )}
 

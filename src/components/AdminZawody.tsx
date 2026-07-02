@@ -93,7 +93,7 @@ export default function AdminZawody() {
       <div className="flex items-start justify-between gap-3">
         <p className="text-steel">
           Programy motywacyjne: tytuł, warunki, opis, grafika i plik (np. regulamin) — doradcy
-          widzą wszystko w zakładce Zawody.
+          widzą wszystko w zakładce Programy motywacyjne.
         </p>
         <button
           onClick={() => setEditing(editing === 'new' ? null : 'new')}

@@ -54,7 +54,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { to: '/mapa', label: 'Mapa', icon: Map },
       { to: '/kalendarz', label: 'Kalendarz', icon: CalendarDays },
       { to: '/ranking', label: 'Ranking', icon: Star, roles: MANAGER_PLUS },
-      { to: '/zawody', label: 'Zawody', icon: Trophy },
+      { to: '/zawody', label: 'Programy motywacyjne', icon: Trophy },
       { to: '/kalkulator', label: 'Kalkulator prowizji', icon: Calculator },
       { to: '/statystyki', label: 'Statystyki', icon: Activity },
       { to: '/raporty', label: 'Rozliczenia', icon: ClipboardList, roles: MANAGER_PLUS },

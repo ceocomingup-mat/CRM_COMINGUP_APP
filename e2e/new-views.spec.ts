@@ -35,8 +35,8 @@ test('Admin: administrator widzi panel kont, doradca jest zablokowany', async ({
 
 test('Zawody: aktywny konkurs z rankingiem + zwycięzca zamkniętego', async ({ page }) => {
   await login(page, 'admin@comingup.pl')
-  await page.getByRole('link', { name: 'Zawody', exact: true }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Zawody')
+  await page.getByRole('link', { name: 'Programy motywacyjne', exact: true }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Programy motywacyjne')
   // aktywny konkurs MM + ranking (admin widzi pełny)
   await expect(page.getByText(/Czerwcowa Masa Marży/)).toBeVisible()
   await expect(page.getByText('Maria Kowalska').first()).toBeVisible()

@@ -55,7 +55,7 @@ export default function Admin() {
               tab === t ? 'bg-brass text-ink' : 'text-muted hover:text-cream'
             }`}
           >
-            {t === 'konta' ? 'Konta' : 'Zawody'}
+            {t === 'konta' ? 'Konta' : 'Programy motywacyjne'}
           </button>
         ))}
       </div>
